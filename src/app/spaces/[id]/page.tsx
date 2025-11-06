@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button";
 import axios from "axios";
 import SpaceDetailSkeleton from "@/components/loaders/testimonialLoader";
+import { EmbedModal } from "@/components/ui/embedModal";
 
 
 type ViewMode = "list" | "block";
@@ -31,6 +32,7 @@ export default function SpaceDetailPage() {
   const [testimonialToArchive, setTestimonialToArchive] = useState<{ id: string; author: string } | null>(null);
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [embedModalOpen, setEmbedModalOpen] = useState(false);
   
 
 
@@ -167,7 +169,10 @@ export default function SpaceDetailPage() {
                   <p className="text-text-secondary line-clamp-2 break-all leading-relaxed mr-4 ">{data?.description}</p>
                 </div>
                 <div className="flex items-center gap-3">
-                  <button className="flex items-center gap-2 px-4 py-2 bg-text-primary text-white rounded-lg hover:bg-zinc-800 transition-colors">
+                  <button 
+                    onClick={() => setEmbedModalOpen(true)}
+                    className="flex items-center gap-2 px-4 py-2 bg-text-primary text-white rounded-lg hover:bg-zinc-800 transition-colors"
+                  >
                     <Code className="size-4" />
                     Embed
                   </button>
@@ -393,6 +398,13 @@ export default function SpaceDetailPage() {
             </DialogFooter>
           </DialogContent>
         </Dialog>
+
+        {/* Embed Modal */}
+        <EmbedModal
+          open={embedModalOpen}
+          onOpenChange={setEmbedModalOpen}
+          campaignId={id}
+        />
       </Topbar>
     </div>
   );

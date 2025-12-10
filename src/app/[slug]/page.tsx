@@ -4,9 +4,10 @@ import React, { useState, useEffect, use } from "react";
 import { MessageSquare, CheckCircle2, Star, User, Mail, Briefcase, Video } from "lucide-react";
 import axios from "axios";
 import { StarRating } from "@/components/ui/starRating";
-import { VideoSpace }  from "./videoTestimonial";
-import { Footer, HeaderSection, Loader, NotCampaign, SubmitedForm, ToggleButton } from "./utils";
-import { TextTestimonial } from "./textTestimonial";
+import { VideoSpace }  from "./components/videoTestimonial";
+import { Footer, HeaderSection, Loader, NotCampaign, SubmitedForm, ToggleButton } from "./components/utils";
+import { TextTestimonial } from "./components/textTestimonial";
+import { VideoSubmitButton } from "./components/videoTestimonial";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -25,6 +26,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [testimonialType, setTestimonialType] = useState<'text' | 'video'>('text');
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -73,7 +75,12 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
       
       console.log("Submitting testimonial with rating:", rating);
       
-      await axios.post(`${BACKEND_URL}/testimonials/create`, {
+      // Use different endpoints based on testimonial type
+      const endpoint = testimonialType === 'text' 
+        ? `${BACKEND_URL}/testimonials/create`
+        : `${BACKEND_URL}/testimonials/create-video-upload`;
+      
+      await axios.post(endpoint, {
         name: formData.name,
         email: formData.email,
         position: formData.position,
@@ -135,35 +142,23 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
             <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
               {testimonialType === 'text' ? (
                 // TEXT TESTIMONIAL LAYOUT
-                <TextTestimonial formData={formData} setFormData={setFormData} handleChange={handleChange} />
+                <TextTestimonial 
+                  formData={formData} 
+                  setFormData={setFormData} 
+                  handleChange={handleChange}
+                  submitting={submitting}
+                  onSubmit={() => {}}
+                />
               ) : (
                 // VIDEO TESTIMONIAL LAYOUT
-                <VideoSpace formData={formData} setFormData={setFormData} handleChange={handleChange} />
+                <VideoSpace 
+                  formData={formData} 
+                  setFormData={setFormData} 
+                  handleChange={handleChange}
+                  submitting={submitting}
+                  onSubmit={() => {}}
+                />
               )}
-
-              {/* Submit Button */}
-              <div className="flex-shrink-0 pt-1">
-                <button
-                  type="submit"
-                  disabled={submitting}
-                  className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90"
-                >
-                  {submitting ? (
-                    <>
-                      <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-                      <span>Submitting...</span>
-                    </>
-                  ) : (
-                    <>
-                      {testimonialType === 'text' ? <MessageSquare className="h-4 w-4" /> : <Video className="h-4 w-4" />}
-                      <span>Submit {testimonialType === 'text' ? 'Feedback' : 'Video'}</span>
-                    </>
-                  )}
-                </button>
-                <p className="mt-3 text-center text-xs text-muted-foreground">
-                  By submitting, you agree that your feedback may be used for testimonials and marketing purposes.
-                </p>
-              </div>
             </form>
           </div>
         </div>

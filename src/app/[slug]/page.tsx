@@ -1,13 +1,10 @@
 "use client";
 
 import React, { useState, useEffect, use } from "react";
-import { MessageSquare, CheckCircle2, Star, User, Mail, Briefcase, Video } from "lucide-react";
 import axios from "axios";
-import { StarRating } from "@/components/ui/starRating";
 import { VideoSpace }  from "./components/videoTestimonial";
 import { Footer, HeaderSection, Loader, NotCampaign, SubmitedForm, ToggleButton } from "./components/utils";
 import { TextTestimonial } from "./components/textTestimonial";
-import { VideoSubmitButton } from "./components/videoTestimonial";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -84,13 +81,14 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
         name: formData.name,
         email: formData.email,
         position: formData.position,
+        testimonialType: testimonialType,
         message: formData.message,
         rating: rating,
         campaignId: campaign.id
       });
 
       setSubmitted(true);
-      setFormData({ name: "", email: "", position: "", message: "", rating: 0 });
+      setFormData({ name: "", email: "", position: "",  message: "", rating: 0 });
 
     } catch (error) {
       console.log("Error submitting testimonial:", error);
@@ -152,6 +150,8 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
               ) : (
                 // VIDEO TESTIMONIAL LAYOUT
                 <VideoSpace 
+                campaign={campaign}
+                  testimonialType={testimonialType}
                   formData={formData} 
                   setFormData={setFormData} 
                   handleChange={handleChange}

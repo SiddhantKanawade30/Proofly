@@ -4,95 +4,20 @@ import { InputStyle } from "./utils";
 import { VideoLogic } from "./video";
 import { useState } from "react";
 import axios from "axios";
+import { VideoSubmitButton } from "./videoSubmit";
 
-export const VideoSubmitButton = ({
-  submitting,
-  onSubmit,
-  blob,
-}: {
-  submitting: boolean;
-  onSubmit: (uploadId: string, playbackId: string) => void;
-  blob: Blob | null;
-}) => {
-  const [uploading, setUploading] = useState(false);
-
-  const handleSubmit = async () => {
-    if (!blob) {
-      alert("Please record a video before submitting.");
-      return;
-    }
-
-    try {
-      setUploading(true);
-      const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-      // Get upload URL from backend
-      const { data } = await axios.get(
-        `${BACKEND_URL}/testimonials/create-video-upload`
-      );
-
-      const uploadUrl = data.url;
-      const uploadId = data.id;
-
-      // Upload video to Mux
-      await fetch(uploadUrl, {
-        method: "PUT",
-        headers: { "Content-Type": "video/webm" },
-        body: blob,
-      });
-
-      // Get playback ID (might need to poll for asset creation)
-      const assetId = data.asset_id || uploadId;
-
-      // Call the original onSubmit with video info
-      onSubmit(uploadId, assetId);
-
-      alert("Video uploaded successfully!");
-    } catch (error) {
-      console.error("Video upload error:", error);
-      alert("Failed to upload video. Please try again.");
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const isDisabled = submitting || uploading || !blob;
-
-  return (
-    <div className="flex-shrink-0 pt-1">
-      <button
-        type="button"
-        disabled={isDisabled}
-        onClick={handleSubmit}
-        className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90"
-      >
-        {uploading || submitting ? (
-          <>
-            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-            <span>{uploading ? "Uploading..." : "Submitting..."}</span>
-          </>
-        ) : (
-          <>
-            <Video className="h-4 w-4" />
-            <span>Submit Video</span>
-          </>
-        )}
-      </button>
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        By submitting, you agree that your feedback may be used for testimonials
-        and marketing purposes.
-      </p>
-    </div>
-  );
-};
 
 export const VideoSpace = ({
+  campaign,
+  testimonialType,
   formData,
   setFormData,
   handleChange,
   submitting,
   onSubmit,
 }: {
+  campaign: any;
+  testimonialType: string;
   formData: any;
   setFormData: any;
   handleChange: any;
@@ -202,6 +127,9 @@ export const VideoSpace = ({
 
       {/* Submit Button */}
       <VideoSubmitButton
+        campaign={campaign}
+        testimonialType={testimonialType}
+        formData={formData}
         submitting={submitting}
         onSubmit={onSubmit}
         blob={blob}

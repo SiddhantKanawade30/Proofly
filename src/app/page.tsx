@@ -10,9 +10,6 @@ import axios from "axios";
 import { DottedLineChart } from "@/components/ui/dotted-line";
 import DashboardSkeleton from "@/components/loaders/DashboardSkeleton";
 
-
-
-
 interface data {
   "id": string,
   "name": string,
@@ -54,7 +51,6 @@ interface Campaigns {
 
 }
 
-
 interface Testimonials {
   "id": string,
   "favourite": boolean,
@@ -66,10 +62,6 @@ interface Testimonials {
   "rating": number,
   "createdAt": string
 }
-
-
-// Chart data showing testimonials gathered over months
-
 
 export default function Home() {
   const router = useRouter();
@@ -103,8 +95,6 @@ export default function Home() {
 
     fetchData();
   }, [router]);
-
-
 
 
   if (loading) {

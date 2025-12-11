@@ -2,7 +2,7 @@
 
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/ui/topbar";
-import { Star, Archive, ArrowLeft, Copy, List, Grid, Code, Share2, Heart } from "lucide-react";
+import { Archive, ArrowLeft, Copy, List, Grid, Code, Heart } from "lucide-react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -41,7 +41,6 @@ export default function SpaceDetailPage() {
 
   useEffect(() => {
     
-  const token = localStorage.getItem("token");
     const fetchSpace = async () => {
       const token = localStorage.getItem("token");
 
@@ -253,7 +252,21 @@ export default function SpaceDetailPage() {
                                 <span className="text-xs text-text-secondary truncate">({testimonial.email})</span>
                               )}
                             </div>
-                            <p className="text-text-secondary mb-2 break-words whitespace-pre-wrap">{testimonial.message}</p>
+                            
+                            {/* Video or Text Content */}
+                            {testimonial.testimonialType === "video" && testimonial.playbackId ? (
+                              <div className="mb-2">
+                                <iframe
+                                  src={`https://player.mux.com/${testimonial.playbackId}`}
+                                  style={{ width: "100%", maxWidth: "600px", border: "none", aspectRatio: "4/3" }}
+                                  allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                                  allowFullScreen
+                                ></iframe>
+                              </div>
+                            ) : (
+                              <p className="text-text-secondary mb-2 break-words whitespace-pre-wrap">{testimonial.message}</p>
+                            )}
+                            
                             <p className="text-xs text-text-secondary">
                               {new Date(testimonial.createdAt).toLocaleDateString()}
                             </p>
@@ -292,13 +305,21 @@ export default function SpaceDetailPage() {
                         key={testimonial.id}
                         className="rounded-lg bg-white border border-zinc-200 p-6 hover:shadow-md transition-shadow flex flex-col"
                       >
-                        {/* Top Row: Favorite, and Archive */}
-                        
-
-                        {/* Testimonial Text */}
-                        <p className="text-text-secondary mb-6 text-base leading-relaxed break-words flex-1 whitespace-pre-wrap">
-                          "{testimonial.message}"
-                        </p>
+                        {/* Video or Text Content */}
+                        {testimonial.testimonialType === "video" && testimonial.playbackId ? (
+                          <div className="mb-6 flex-1">
+                            <iframe
+                              src={`https://player.mux.com/${testimonial.playbackId}`}
+                              style={{ width: "100%", border: "none", aspectRatio: "4/3", borderRadius: "8px" }}
+                              allow="accelerometer; gyroscope; autoplay; encrypted-media; picture-in-picture;"
+                              allowFullScreen
+                            ></iframe>
+                          </div>
+                        ) : (
+                          <p className="text-text-secondary mb-6 text-base leading-relaxed break-words flex-1 whitespace-pre-wrap">
+                            "{testimonial.message}"
+                          </p>
+                        )}
 
                         {/* Border */}
                         <div className="border-t border-zinc-200 mb-4 flex-shrink-0"></div>
@@ -409,4 +430,3 @@ export default function SpaceDetailPage() {
     </div>
   );
 }
-

@@ -7,19 +7,22 @@ import Controls from "./components/Controls";
 import TestimonialList from "./components/TestimonialList";
 import ArchiveDialog from "./components/ArchiveDialog";
 import Link from "next/link";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Toaster, toast } from "sonner";
 // Dialog is handled by ArchiveDialog component
 import axios from "axios";
 import SpaceDetailSkeleton from "@/components/loaders/testimonialLoader";
 import { EmbedModal } from "@/components/ui/embedModal";
+import { useUser } from "@/context/UserContext";
+import { rateLimitHandlers } from "@/lib/rateLimitHandler";
 
 
 type ViewMode = "list" | "block";
 
 export default function SpaceDetailPage() {
   const params = useParams();
+  const router = useRouter();
   const id = params?.id as string;
   const [viewMode, setViewMode] = useState<ViewMode>("block");
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
@@ -28,11 +31,17 @@ export default function SpaceDetailPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [embedModalOpen, setEmbedModalOpen] = useState(false);
-  
+  const { data: userData, loading: authLoading } = useUser();
 
 
   
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  useEffect(() => {
+    if (!authLoading && !userData?.user) {
+      router.push('/signin');
+    }
+  }, [authLoading, userData?.user, router]);
 
   useEffect(() => {
     
@@ -70,6 +79,7 @@ export default function SpaceDetailPage() {
         setFavorites(favIds);
       } catch (error: any) {
        console.log(error);
+       rateLimitHandlers.protected.handleError(error, "Failed to load space details");
       } finally {
         setLoading(false);
       }
@@ -83,22 +93,29 @@ export default function SpaceDetailPage() {
 
     const token = localStorage.getItem("token");
 
-    const fav = async () =>{
-      const res = await axios.put(`${backendUrl}/testimonials/favourite`,{testimonialId},{
-        headers:{
-          "Authorization": `Bearer ${token}`
-        }
-      });
+    const fav = async () => {
+      try {
+        const res = await axios.put(`${backendUrl}/testimonials/favourite`, { testimonialId }, {
+          headers: {
+            "Authorization": `Bearer ${token}`
+          }
+        });
+      } catch (error: any) {
+        rateLimitHandlers.protected.handleError(error, "Failed to add to favorites");
+      }
     }
 
-    const unFav = async() =>{
-      await axios.put(`${backendUrl}/testimonials/remove-favorite`,{testimonialId},{
-        headers:{
-          "Authorization" : `Bearer ${token}`
-        }
-      })
+    const unFav = async() => {
+      try {
+        await axios.put(`${backendUrl}/testimonials/remove-favorite`, { testimonialId }, {
+          headers: {
+            "Authorization" : `Bearer ${token}`
+          }
+        });
+      } catch (error: any) {
+        rateLimitHandlers.protected.handleError(error, "Failed to remove from favorites");
+      }
     }
-
 
     setFavorites(prev => {
       const newFavorites = new Set(prev);

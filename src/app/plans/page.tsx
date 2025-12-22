@@ -3,6 +3,8 @@
 import { Check, X } from "lucide-react";
 import axios from "axios";
 import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 
 declare global {
   interface Window {
@@ -115,9 +117,17 @@ const PlanCard = ({
 };
 
 export default function PlansPage() {
+  const router = useRouter();
+  const { data, loading } = useUser();
   const currentPlan: "FREE" | "PREMIUM" = "FREE";
 
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
+
+  useEffect(() => {
+    if (!loading && !data?.user) {
+      router.push('/signin');
+    }
+  }, [loading, data?.user, router]);
 
   useEffect(() => {
     const script = document.createElement("script");

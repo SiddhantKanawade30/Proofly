@@ -9,6 +9,7 @@ import { DottedLineChart } from "@/components/ui/dotted-line";
 import DashboardSkeleton from "@/components/loaders/DashboardSkeleton";
 import Link from "next/link";
 import { useUser } from "@/context/UserContext";
+import { useEffect } from "react";
 
 interface sortTestimonial {
   "id": string,
@@ -55,22 +56,31 @@ export default function Home() {
   const router = useRouter();
   const { data, loading } = useUser();
 
+  useEffect(() => {
+    if (!loading && !data?.user) {
+      router.push('/signin');
+    }
+  }, [loading, data?.user, router]);
 
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-100 font-sans">
         <Sidebar user={data?.user ? { id: data.user.id, name: data.user.name, email: data.user.email } : undefined} />
-        <Topbar>
+        <Topbar campaigns={data?.user?.campaigns || []}>
           <DashboardSkeleton />
         </Topbar>
       </div>
     );
   }
 
+  if (!data?.user) {
+    return null;
+  }
+
   return (
     <div className="flex min-h-screen bg-gray-100 font-sans">
       <Sidebar user={data?.user ? { id: data.user.id, name: data.user.name, email: data.user.email } : undefined} />
-      <Topbar>
+      <Topbar campaigns={data?.user?.campaigns || []}>
         {/* Stats Cards */}
         <div className="grid gap-6 md:grid-cols-3 mb-8">
           <div className="rounded-md bg-white px-6 space-y-2 py-3 border border-gray-300  ">

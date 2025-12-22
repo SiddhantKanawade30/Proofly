@@ -4,6 +4,8 @@ import React, { useState, useEffect, use, useRef } from "react";
 import { MessageSquare, CheckCircle2, Star, User, Mail, Briefcase, Video, FileText, X } from "lucide-react";
 import axios from "axios";
 import { StarRating } from "@/components/ui/starRating";
+import { rateLimitHandlers } from "@/lib/rateLimitHandler";
+import { toast } from "sonner";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -49,20 +51,16 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
   }, [resolvedParams.slug]);
 
   const fetchCampaign = async (campaignId: any) => {
-    try{
+    try {
       const res = await axios.get(`${BACKEND_URL}/campaigns/get/${campaignId}`);
-      
-        setCampaign(res.data as Campaign);
-      
-    }
-    catch(error){
+      setCampaign(res.data as Campaign);
+    } catch (error: any) {
       console.log("Error fetching campaign:", error);
-    }
-    finally{
+      rateLimitHandlers.public.handleError(error, "Failed to load campaign");
+    } finally {
       setLoading(false);
     }
-   
-    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -71,19 +69,19 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
 
     // Validate rating
     if (!formData.rating || formData.rating === 0) {
-      alert("Please select a rating (1-5 stars) before submitting.");
+      toast.error("Please select a rating (1-5 stars) before submitting.");
       return;
     }
 
     // Validate video recording if video type is selected
     if (testimonialType === "video" && !videoRecorded) {
-      alert("Please record a video before submitting.");
+      toast.error("Please record a video before submitting.");
       return;
     }
 
     // Validate text message if text type is selected
     if (testimonialType === "text" && !formData.message.trim()) {
-      alert("Please enter your feedback message.");
+      toast.error("Please enter your feedback message.");
       return;
     }
 
@@ -138,9 +136,10 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
       setSubmitted(true);
       setFormData({ name: "", email: "", position: "", message: "", rating: 0 });
       resetVideo();
-    } catch (error) {
+      toast.success("Testimonial submitted successfully!");
+    } catch (error: any) {
       console.log("Error submitting testimonial:", error);
-      alert("Failed to submit testimonial. Please try again.");
+      rateLimitHandlers.public.handleError(error, "Failed to submit testimonial");
     } finally {
       setSubmitting(false);
       setUploading(false);

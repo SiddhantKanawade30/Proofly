@@ -1,5 +1,7 @@
 import { GoogleLogin } from "@react-oauth/google";
 import axios from "axios";
+import { rateLimitHandlers } from "@/lib/rateLimitHandler";
+import { toast } from "sonner";
 
 interface GoogleAuthButtonProps {
   handleGoogleLogin?: (credentialResponse: any) => void;
@@ -10,13 +12,13 @@ export function GoogleAuthButton({ handleGoogleLogin }: GoogleAuthButtonProps) {
   const defaultHandleGoogleLogin = async (credentialResponse: any) => {
     try {
       if (!credentialResponse?.credential) {
-        alert("No credential received from Google");
+        toast.error("No credential received from Google");
         return;
       }
 
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) {
-        alert("Backend URL not configured. Please check your environment variables.");
+        toast.error("Backend URL not configured. Please check your environment variables.");
         console.error("NEXT_PUBLIC_BACKEND_URL is not set");
         return;
       }
@@ -36,11 +38,13 @@ export function GoogleAuthButton({ handleGoogleLogin }: GoogleAuthButtonProps) {
 
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
-        alert("Login successful!");
+        toast.success("Login successful! Redirecting...");
         console.log("User:", res.data.user);
-        window.location.href = "/";
+        setTimeout(() => {
+          window.location.href = "/";
+        }, 1500);
       } else {
-        alert("Login failed: No token received");
+        toast.error("Login failed: No token received");
       }
     } catch (err: any) {
       console.error("Google Login Error:", err);
@@ -54,10 +58,9 @@ export function GoogleAuthButton({ handleGoogleLogin }: GoogleAuthButtonProps) {
       
       if (err.response?.status === 404) {
         const attemptedUrl = err.config?.url || "unknown";
-        alert(`Backend endpoint not found (404). Please check:\n1. Backend server is running\n2. URL is correct: ${attemptedUrl}\n3. Route is properly registered`);
+        toast.error(`Backend endpoint not found. Please check your server connection.`);
       } else {
-        const errorMessage = err.response?.data?.error || err.response?.data?.details || err.message || "Google login failed";
-        alert(`Login failed: ${errorMessage}`);
+        rateLimitHandlers.auth.handleError(err);
       }
     }
   };
@@ -67,7 +70,7 @@ export function GoogleAuthButton({ handleGoogleLogin }: GoogleAuthButtonProps) {
       onSuccess={handleGoogleLogin || defaultHandleGoogleLogin}
       onError={() => {
         console.log("Login Failed");
-        alert("Google login failed");
+        toast.error("Google login failed");
       }}
     />
   );

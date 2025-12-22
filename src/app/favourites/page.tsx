@@ -3,10 +3,12 @@
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/ui/topbar";
 import { Star, Archive, MessageCircle, List, Grid } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useEffect } from "react";
 import SpacesSkeletonLoader from "@/components/loaders/loader";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
+import { rateLimitHandlers } from "@/lib/rateLimitHandler";
 
 // Mock data - replace with actual API calls
 const mockFavoriteTestimonials = [
@@ -73,14 +75,22 @@ export default function FavouritesPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [favouriteTestimonials, setFavouriteTestimonials] = useState<DisplayTestimonial[]>([]);
   const [loading, setLoading] = useState(true);
+  const router = useRouter();
+  const { data, loading: authLoading } = useUser();
+
+  useEffect(() => {
+    if (!authLoading && !data?.user) {
+      router.push('/signin');
+    }
+  }, [authLoading, data?.user, router]);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL ;
 
   useEffect(() => {
     const fetchFavouriteTestimonials = async () => {
       try {
-        const response = await axios.get(`${backendUrl}/testimonials/favourite`,{
-          headers:{
+        const response = await axios.get(`${backendUrl}/testimonials/favourite`, {
+          headers: {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           }
         });
@@ -88,8 +98,8 @@ export default function FavouritesPage() {
         const campaigns: campaigns[] = response.data;
         const flattenedTestimonials: DisplayTestimonial[] = [];
 
-        campaigns.forEach((campaign)=>{
-          campaign.testimonials.forEach((testimonials)=>{
+        campaigns.forEach((campaign) => {
+          campaign.testimonials.forEach((testimonials) => {
             flattenedTestimonials.push({
               id: testimonials.id,
               author: testimonials.name,
@@ -103,8 +113,9 @@ export default function FavouritesPage() {
         })
 
         setFavouriteTestimonials(flattenedTestimonials);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching favourite testimonials:", error);
+        rateLimitHandlers.protected.handleError(error, "Failed to load favourite testimonials");
       } finally {
         setLoading(false);
       }

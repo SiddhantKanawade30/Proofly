@@ -3,14 +3,24 @@
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/ui/topbar";
 import { Settings, Mail, Bell, Moon, Sun, Lock, BadgeCheck, LogOut } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import { Toaster, toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
 
 export default function SettingsPage() {
   const [emailNotifications, setEmailNotifications] = useState(true);
   const [notifications, setNotifications] = useState(true);
   const [theme, setTheme] = useState<"light" | "dark">("light");
+  const router = useRouter();
+  const { data, loading } = useUser();
+
+  useEffect(() => {
+    if (!loading && !data?.user) {
+      router.push('/signin');
+    }
+  }, [loading, data?.user, router]);
 
   const handleThemeToggle = () => {
     const newTheme = theme === "light" ? "dark" : "light";

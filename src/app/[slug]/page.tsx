@@ -5,6 +5,8 @@ import axios from "axios";
 import { VideoSpace }  from "./components/videoTestimonial";
 import { Footer, HeaderSection, Loader, NotCampaign, SubmitedForm, ToggleButton } from "./components/utils";
 import { TextTestimonial } from "./components/textTestimonial";
+import { rateLimitHandlers } from "@/lib/rateLimitHandler";
+import { toast } from "sonner";
 
 const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -39,20 +41,16 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
   }, [resolvedParams.slug]);
 
   const fetchCampaign = async (campaignId: any) => {
-    try{
+    try {
       const res = await axios.get(`${BACKEND_URL}/campaigns/get/${campaignId}`);
-      
-        setCampaign(res.data as Campaign);
-      
-    }
-    catch(error){
+      setCampaign(res.data as Campaign);
+    } catch (error: any) {
       console.log("Error fetching campaign:", error);
-    }
-    finally{
+      rateLimitHandlers.public.handleError(error, "Failed to load campaign");
+    } finally {
       setLoading(false);
     }
-   
-    }
+  }
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -61,7 +59,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
 
     // Validate rating
     if (!formData.rating || formData.rating === 0) {
-      alert("Please select a rating (1-5 stars) before submitting.");
+      toast.error("Please select a rating (1-5 stars) before submitting.");
       return;
     }
 
@@ -92,12 +90,12 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
 
       setSubmitted(true);
       setFormData({ name: "", email: "", position: "",  message: "", rating: 0 });
+      toast.success("Testimonial submitted successfully!");
 
-    } catch (error) {
+    } catch (error: any) {
       console.log("Error submitting testimonial:", error);
-      const err = error as any;
-      const status = err?.response?.status;
-      const serverMessage = err?.response?.data?.message || err?.response?.data?.error || "";
+      const status = error?.response?.status;
+      const serverMessage = error?.response?.data?.message || error?.response?.data?.error || "";
 
       // If backend returns 403 for quota limits, show a friendly quota message
       if (status === 403 && /only allows|Free plan|Fair usage|exceeded/i.test(serverMessage)) {
@@ -105,8 +103,8 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
           "Quota reached: Sorry, this campaign has reached its testimonial limit on the current plan. Your testimonial was not submitted."
         );
       } else {
-        // For any other error, show generic failure message
-        setErrorMessage("Failed to submit testimonial. Please try again or contact support.");
+        // Use rate limit handler for other errors
+        rateLimitHandlers.public.handleError(error, "Failed to submit testimonial");
       }
     } finally {
       setSubmitting(false);

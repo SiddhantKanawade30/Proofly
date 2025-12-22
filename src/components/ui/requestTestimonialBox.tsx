@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import { ChevronDown } from "lucide-react"
+import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -19,54 +20,42 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 
-interface Space {
+interface Campaign {
   id: string
-  name: string
-  shareUrl: string
+  title: string
+  shareLink: string
   description?: string
+  _count?: {
+    testimonials: number
+  }
 }
 
-const spaces: Space[] = [
-  {
-    id: "1",
-    name: "Project Alpha",
-    shareUrl: "https://testimonials.app/space/project-alpha",
-    description: "Main project workspace",
-  },
-  {
-    id: "2",
-    name: "Project Beta",
-    shareUrl: "https://testimonials.app/space/project-beta",
-    description: "Secondary workspace",
-  },
-  {
-    id: "3",
-    name: "Marketing Team",
-    shareUrl: "https://testimonials.app/space/marketing-team",
-    description: "Marketing campaigns space",
-  },
-  {
-    id: "4",
-    name: "Development",
-    shareUrl: "https://testimonials.app/space/development",
-    description: "Dev team workspace",
-  },
-]
+interface RequestTestimonialBoxProps {
+  campaigns?: Campaign[]
+}
 
-export function RequestTestimonialBox() {
+export function RequestTestimonialBox({ campaigns = [] }: RequestTestimonialBoxProps) {
   const [open, setOpen] = React.useState(false)
-  const [copied, setCopied] = React.useState(false)
 
-  const handleSpaceClick = (space: Space) => {
-    // Copy share URL to clipboard
-    navigator.clipboard.writeText(space.shareUrl).then(() => {
-      setCopied(true)
+  console.log("RequestTestimonialBox received campaigns:", campaigns)
+
+  const handleCampaignClick = (campaign: Campaign) => {
+    // Construct proper share URL
+    let fullShareUrl = campaign.shareLink
+    
+    // Add protocol if missing
+    if (!fullShareUrl.startsWith("http")) {
+      fullShareUrl = `http://${fullShareUrl}`
+    }
+    
+    navigator.clipboard.writeText(fullShareUrl).then(() => {
+      toast.success("Share link copied to clipboard")
       setTimeout(() => {
-        setCopied(false)
         setOpen(false)
-      }, 1000)
+      }, 1500)
     }).catch((err) => {
       console.error("Failed to copy:", err)
+      toast.error("Failed to copy link")
     })
   }
 
@@ -80,7 +69,6 @@ export function RequestTestimonialBox() {
           className="justify-between h-auto border hover:bg-zinc-100"
         >
           <div className="flex items-center gap-2 flex-1 min-w-0">
-            
             <div className="flex-1 -py-1 text-left">
               Request Testimonial
             </div>
@@ -90,29 +78,33 @@ export function RequestTestimonialBox() {
       </PopoverTrigger>
       <PopoverContent className="w-[320px] p-0" align="end">
         <Command>
-          <CommandInput placeholder="Search for space..." className="h-9" />
+          <CommandInput placeholder="Search for campaign..." className="h-9" />
           <CommandList>
             <div className="px-3 py-2 text-sm text-text-secondary border-b border-zinc-200">
-              Click on a space to copy the share URL
+              Click on a campaign to copy the share URL
             </div>
-            <CommandEmpty>No spaces found.</CommandEmpty>
-            <CommandGroup>
-              {spaces.map((space) => (
-                <CommandItem
-                  key={space.id}
-                  value={space.name}
-                  onSelect={() => handleSpaceClick(space)}
-                  className="cursor-pointer"
-                >
-                  <div className="flex flex-col gap-1 flex-1">
-                    <span className="text-base font-medium">{space.name}</span>
-                    {space.description && (
-                      <span className="text-sm text-text-secondary">{space.description}</span>
-                    )}
-                  </div>
-                </CommandItem>
-              ))}
-            </CommandGroup>
+            {campaigns.length === 0 && (
+              <CommandEmpty>No campaigns found. Create one to get started!</CommandEmpty>
+            )}
+            {campaigns.length > 0 && (
+              <CommandGroup>
+                {campaigns.map((campaign) => (
+                  <CommandItem
+                    key={campaign.id}
+                    value={campaign.title}
+                    onSelect={() => handleCampaignClick(campaign)}
+                    className="cursor-pointer"
+                  >
+                    <div className="flex flex-col gap-1 flex-1 min-w-0">
+                      <span className="text-base font-medium truncate">{campaign.title}</span>
+                      {campaign.description && (
+                        <span className="text-sm text-text-secondary truncate">{campaign.description}</span>
+                      )}
+                    </div>
+                  </CommandItem>
+                ))}
+              </CommandGroup>
+            )}
           </CommandList>
         </Command>
       </PopoverContent>

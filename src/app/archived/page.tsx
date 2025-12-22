@@ -3,11 +3,12 @@
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/ui/topbar";
 import { Archive, Star, MessageCircle, List, Grid } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
-import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import SpacesSkeletonLoader from "@/components/loaders/loader";
+import { useUser } from "@/context/UserContext";
+import { rateLimitHandlers } from "@/lib/rateLimitHandler";
 
 type ViewMode = "list" | "cards";
 
@@ -49,6 +50,13 @@ export default function ArchivedPage() {
   const [archivedTestimonials, setArchivedTestimonials] = useState<DisplayTestimonial[]>([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+  const { data, loading: authLoading } = useUser();
+
+  useEffect(() => {
+    if (!authLoading && !data?.user) {
+      router.push('/signin');
+    }
+  }, [authLoading, data?.user, router]);
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || "http://localhost:8080";
 
@@ -88,8 +96,9 @@ export default function ArchivedPage() {
         });
 
         setArchivedTestimonials(flattenedTestimonials);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching archived testimonials:", error);
+        rateLimitHandlers.protected.handleError(error, "Failed to load archived testimonials");
       } finally {
         setLoading(false);
       }

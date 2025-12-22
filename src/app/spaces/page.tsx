@@ -11,6 +11,8 @@ import SpacesSkeletonLoader from "@/components/loaders/loader";
 import { Toaster, toast } from "sonner";
 import { SpaceCard } from "@/components/spaces/SpaceCard";
 import { DeleteSpaceDialog } from "@/components/spaces/DeleteSpaceDialog";
+import { useUser } from "@/context/UserContext";
+import { rateLimitHandlers } from "@/lib/rateLimitHandler";
 
 
 
@@ -32,6 +34,13 @@ export default function SpacesPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [spaceToDelete, setSpaceToDelete] = useState<{ id: string; title: string } | null>(null);
   const router = useRouter();
+  const { data, loading: authLoading } = useUser();
+
+  useEffect(() => {
+    if (!authLoading && !data?.user) {
+      router.push('/signin');
+    }
+  }, [authLoading, data?.user, router]);
 
   const handleDeleteClick = (space: Space, e: React.MouseEvent) => {
     e.preventDefault();
@@ -68,7 +77,7 @@ export default function SpacesPage() {
         setSpaceToDelete(null);
       }
     } catch (error: any) {
-      toast.error("Failed to delete space");
+      rateLimitHandlers.protected.handleError(error, "Failed to delete space");
     }
   };
 
@@ -116,17 +125,17 @@ export default function SpacesPage() {
         router.push("/signin");
       }
 
-      try{
-      const res = await axios.get(`${backendUrl}/campaigns/get`,{
-        headers : {
-          "Authorization" : `Bearer ${localStorage.getItem("token")}`
-        }
-      })
-
-      setSpaces(res.data)
-      console.log(res.data)
-      } catch (error) {
+      try {
+        const res = await axios.get(`${backendUrl}/campaigns/get`, {
+          headers : {
+            "Authorization" : `Bearer ${localStorage.getItem("token")}`
+          }
+        });
+        setSpaces(res.data);
+        console.log(res.data);
+      } catch (error: any) {
         console.log(error);
+        rateLimitHandlers.protected.handleError(error, "Failed to load spaces");
       } finally {
         setLoading(false);
       }

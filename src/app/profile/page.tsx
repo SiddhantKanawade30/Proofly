@@ -1,16 +1,41 @@
 "use client";
 
-import { useMemo } from "react";
+import { useMemo, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import Topbar from "@/components/ui/topbar";
 import Sidebar from "@/components/Sidebar";
-import { Mail, User, Calendar, Zap, Copy } from "lucide-react";
+import { Mail, User, Calendar, Zap, Copy, LogOut, Loader2 } from "lucide-react";
 import { useUser } from "@/context/UserContext";
+import { toast } from "sonner";
 
 export default function ProfilePage() {
   const router = useRouter();
   const { data, loading } = useUser();
   const user = data?.user;
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+  useEffect(() => {
+    if (!loading && !user) {
+      router.push('/signin');
+    }
+  }, [loading, user, router]);
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true);
+      // Remove token from localStorage
+      localStorage.removeItem("token");
+      toast.success("Logged out successfully");
+      // Redirect to signin page
+      setTimeout(() => {
+        router.push("/signin");
+      }, 1000);
+    } catch (error) {
+      console.error("Logout error:", error);
+      toast.error("Failed to logout");
+      setIsLoggingOut(false);
+    }
+  };
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -174,7 +199,7 @@ export default function ProfilePage() {
 
           {/* Upgrade CTA */}
           {user.plan === "FREE" && (
-            <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-200 p-6">
+            <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-200 p-6 mb-6">
               <h3 className="text-lg font-semibold text-violet-900 mb-2">Upgrade to Premium</h3>
               <p className="text-violet-700 mb-4">
                 Get unlimited videos, advanced features, and priority support
@@ -184,6 +209,27 @@ export default function ProfilePage() {
               </a>
             </div>
           )}
+
+          {/* Logout Button */}
+          <div className="flex justify-end">
+            <button
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="inline-flex items-center justify-center gap-2 px-6 py-2 rounded-lg font-medium transition-colors bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 disabled:opacity-50 disabled:pointer-events-none"
+            >
+              {isLoggingOut ? (
+                <>
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  Logging out...
+                </>
+              ) : (
+                <>
+                  <LogOut className="h-4 w-4" />
+                  Logout
+                </>
+              )}
+            </button>
+          </div>
         </div>
       </Topbar>
     </div>

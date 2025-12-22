@@ -1,6 +1,6 @@
 "use client"
 
-import { GalleryVerticalEnd } from "lucide-react"
+import { GalleryVerticalEnd, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -15,41 +15,48 @@ import { Input } from "@/components/ui/input"
 import { GoogleAuthButton } from "@/components/googleAuthButton"
 import axios from "axios"
 import { useRouter } from "next/navigation"
+import { rateLimitHandlers } from "@/lib/rateLimitHandler"
+import { toast } from "sonner"
+import { useState } from "react"
 
 export function SigninForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
 
-const router = useRouter();
+  const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-  e.preventDefault();
-  const formData = new FormData(e.target as HTMLFormElement);
-  const email = formData.get("email") as string;
-  const password = formData.get("password") as string;
-  
-  
-  try{
-    const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signin`, {
-      email,
-      password
-    });
+    e.preventDefault();
+    const formData = new FormData(e.target as HTMLFormElement);
+    const email = formData.get("email") as string;
+    const password = formData.get("password") as string;
+    
+    try {
+      setIsLoading(true);
 
-    if(res.status === 200){
-      alert("Login successful");
-      router.push("/");
-      localStorage.setItem("token", res.data.token);
+      const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signin`, {
+        email,
+        password
+      });
+
+      if(res.status === 200) {
+        toast.success("Login successful! Redirecting...");
+        localStorage.setItem("token", res.data.token);
+        setTimeout(() => {
+          router.push("/");
+        }, 1500);
+      } else {
+        toast.error("Login failed");
+      }
+    } catch (error: any) {
+      console.error("Signin error:", error);
+      rateLimitHandlers.auth.handleError(error);
+    } finally {
+      setIsLoading(false);
     }
-    else{
-      alert("Login failed");
-    }
-    console.log(res.data);
-  } catch (error) {
-    console.error(error);
-    alert("Login failed");
   }
-}
 
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
@@ -91,7 +98,16 @@ const router = useRouter();
             />
           </Field>
           <Field>
-            <Button type="submit">Sign In</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Signing In...
+                </>
+              ) : (
+                "Sign In"
+              )}
+            </Button>
           </Field>
           <FieldSeparator>Or</FieldSeparator>
           <Field className="flex justify-center">

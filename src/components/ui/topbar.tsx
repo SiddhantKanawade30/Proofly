@@ -33,6 +33,16 @@ import { cn } from "@/lib/utils";
 import { useState } from "react";
 import { RequestTestimonialBox } from "./requestTestimonialBox";
 
+interface Campaign {
+  id: string
+  title: string
+  shareLink: string
+  description?: string
+  _count?: {
+    testimonials: number
+  }
+}
+
 interface NavItem {
   name: string;
   href: string;
@@ -108,7 +118,7 @@ function UserProfileDropdown() {
   );
 }
 
-export default function Topbar({ children }: { children: React.ReactNode }) {
+export default function Topbar({ children, campaigns = [] }: { children: React.ReactNode; campaigns?: Campaign[] }) {
   const pathname = usePathname();
   const params = useParams();
   
@@ -164,7 +174,7 @@ export default function Topbar({ children }: { children: React.ReactNode }) {
             </div>
 
             {/* Request Testimonials */}
-            <RequestTestimonialBox />
+            <RequestTestimonialBox campaigns={campaigns} />
 
             {/* Notifications */}
             <button className="w-9 h-9 rounded-full hover:bg-zinc-100 flex items-center justify-center transition-colors relative">

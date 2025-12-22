@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Check, ChevronsUpDown } from "lucide-react";
+import { Check, ChevronsUpDown, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import {
   Dialog,
@@ -27,6 +27,7 @@ import {
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { toast } from "sonner";
+import { rateLimitHandlers } from "@/lib/rateLimitHandler";
 const categories = [
   {
     value: "project",
@@ -59,6 +60,7 @@ interface CreateSpaceDialogProps {
 export function CreateSpaceDialog({ open, onOpenChange, onSpaceCreated }: CreateSpaceDialogProps) {
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const triggerRef = useRef<HTMLButtonElement>(null);
   const [popoverWidth, setPopoverWidth] = useState<number | undefined>(undefined);
   
@@ -78,7 +80,7 @@ export function CreateSpaceDialog({ open, onOpenChange, onSpaceCreated }: Create
 
     const token = localStorage.getItem("token");
     if (!token) {
-      alert("Please login to create a space");
+      toast.error("Please login to create a space");
       return;
     }
 
@@ -90,11 +92,13 @@ export function CreateSpaceDialog({ open, onOpenChange, onSpaceCreated }: Create
     };
 
     if (!formData.title || !formData.description) {
-      alert("Title and description are required");
+      toast.error("Title and description are required");
       return;
     }
 
     try {
+      setIsLoading(true);
+
       const res = await axios.post(
         `${process.env.NEXT_PUBLIC_BACKEND_URL}/campaigns/create`,
         formData,
@@ -126,12 +130,13 @@ export function CreateSpaceDialog({ open, onOpenChange, onSpaceCreated }: Create
         toast.success("Space created successfully");
         handleCancel();
       } else {
-        alert("Failed to create space");
+        toast.error("Failed to create space");
       }
     } catch (error: any) {
       console.error("Create space error:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Failed to create space";
-      alert(`Error: ${errorMessage}`);
+      rateLimitHandlers.protected.handleError(error, "Failed to create space");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -257,11 +262,19 @@ export function CreateSpaceDialog({ open, onOpenChange, onSpaceCreated }: Create
               variant="outline"
               onClick={handleCancel}
               className="sm:mr-2"
+              disabled={isLoading}
             >
               Cancel
             </Button>
-            <Button type="submit">
-              Create Space
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating...
+                </>
+              ) : (
+                "Create Space"
+              )}
             </Button>
           </DialogFooter>
         </form>

@@ -1,5 +1,5 @@
 "use client"
-import { GalleryVerticalEnd } from "lucide-react"
+import { GalleryVerticalEnd, Loader2 } from "lucide-react"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -14,6 +14,9 @@ import { Input } from "@/components/ui/input"
 import { GoogleAuthButton } from "@/components/googleAuthButton"
 import axios from "axios"
 import { useRouter } from "next/navigation"
+import { rateLimitHandlers } from "@/lib/rateLimitHandler"
+import { toast } from "sonner"
+import { useState } from "react"
 
  
 
@@ -22,8 +25,8 @@ export function SignupForm({
   ...props
 }: React.ComponentProps<"div">) {
 
-
   const router = useRouter();
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -32,35 +35,34 @@ export function SignupForm({
     const email = formData.get("email") as string;
     const password = formData.get("password") as string;
   
-    
-  
-    try{
+    try {
       if (!name || !email || !password) {
-        alert("Please fill in all fields");
+        toast.error("Please fill in all fields");
         return;
       }
+
+      setIsLoading(true);
 
       const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signup`, {
         name,
         email,
         password
       });
-      console.log(res.data);
 
-      if(res.status === 201){
-        alert("Account created successfully");
-        router.push("/signin");
+      if(res.status === 201) {
+        toast.success("Account created successfully! Redirecting to sign in...");
+        setTimeout(() => {
+          router.push("/signin");
+        }, 1500);
+      } else {
+        toast.error("Failed to create account");
       }
-      else{
-        alert("Failed to create account");
-      }
-  
     } catch (error: any) {
       console.error("Signup error:", error);
-      const errorMessage = error.response?.data?.message || error.message || "Failed to create account";
-      alert(`Signup failed: ${errorMessage}`);
+      rateLimitHandlers.auth.handleError(error);
+    } finally {
+      setIsLoading(false);
     }
-    
   }
 
 
@@ -115,7 +117,16 @@ export function SignupForm({
           </Field>
           
           <Field>
-            <Button type="submit" >Create Account</Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Creating Account...
+                </>
+              ) : (
+                "Create Account"
+              )}
+            </Button>
           </Field>
           <FieldSeparator>Or</FieldSeparator>
           <Field className="flex justify-center">

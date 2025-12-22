@@ -1,8 +1,9 @@
 "use client"
 
 import * as React from "react"
-import { ChevronDown, User, Settings, CreditCard, LogOut } from "lucide-react"
+import { ChevronDown, User, Settings, CreditCard, LogOut, Loader2 } from "lucide-react"
 import { useRouter } from "next/navigation"
+import { toast } from "sonner"
 
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -23,7 +24,7 @@ interface UserMenuOption {
   label: string
   icon: React.ReactNode
   href?: string
-  onClick?: () => void
+  onClick?: () => void | Promise<void>
 }
 
 interface ComboboxDemoProps {
@@ -31,46 +32,64 @@ interface ComboboxDemoProps {
   userEmail?: string
 }
 
-const userMenuOptions: UserMenuOption[] = [
-  {
-    value: "profile",
-    label: "Profile",
-    icon: <User className="size-4" />,
-    href: "/profile",
-  },
-  {
-    value: "settings",
-    label: "Settings",
-    icon: <Settings className="size-4" />,
-    href: "/settings",
-  },
-  {
-    value: "plans",
-    label: "Plans",
-    icon: <CreditCard className="size-4" />,
-    href: "/plans",
-  },
-  {
-    value: "logout",
-    label: "Logout",
-    icon: <LogOut className="size-4" />,
-    onClick: () => {
-      // Handle logout logic here
-      console.log("Logout clicked")
-    },
-  },
-]
-
 export function ComboboxDemo({ userName = "User", userEmail = "user@example.com" }: ComboboxDemoProps) {
   const [open, setOpen] = React.useState(false)
+  const [isLoggingOut, setIsLoggingOut] = React.useState(false)
   const router = useRouter()
+
+  const handleLogout = async () => {
+    try {
+      setIsLoggingOut(true)
+      // Remove token from localStorage
+      localStorage.removeItem("token")
+      toast.success("Logged out successfully")
+      // Redirect to signin page
+      setTimeout(() => {
+        router.push("/signin")
+      }, 1000)
+    } catch (error) {
+      console.error("Logout error:", error)
+      toast.error("Failed to logout")
+      setIsLoggingOut(false)
+    }
+  }
+
+  const userMenuOptions: UserMenuOption[] = [
+    {
+      value: "profile",
+      label: "Profile",
+      icon: <User className="size-4" />,
+      href: "/profile",
+    },
+    {
+      value: "settings",
+      label: "Settings",
+      icon: <Settings className="size-4" />,
+      href: "/settings",
+    },
+    {
+      value: "plans",
+      label: "Plans",
+      icon: <CreditCard className="size-4" />,
+      href: "/plans",
+    },
+    {
+      value: "logout",
+      label: isLoggingOut ? "Logging out..." : "Logout",
+      icon: isLoggingOut ? <Loader2 className="size-4 animate-spin" /> : <LogOut className="size-4" />,
+      onClick: handleLogout,
+    },
+  ]
+
   const handleOptionClick = (option: UserMenuOption) => {
-    if (option.onClick) {
+    if (option.value === "logout") {
+      handleLogout()
+    } else if (option.onClick) {
       option.onClick()
     } else if (option.href) {
       router.push(option.href)
+      setOpen(false)
     }
-    setOpen(false)
   }
 
   return (

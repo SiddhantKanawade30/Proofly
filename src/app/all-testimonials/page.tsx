@@ -4,11 +4,13 @@ import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/ui/topbar";
 import axios from "axios";
 import { Star, Archive, MessageCircle, List, Grid, Heart, Code } from "lucide-react";
-import router from "next/router";
 import { useEffect, useState } from "react";
 import SpacesSkeletonLoader from "@/components/loaders/loader";
 import { StarDisplay } from "@/components/ui/starDisplay";
 import { Toaster, toast } from "sonner";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/context/UserContext";
+import { rateLimitHandlers } from "@/lib/rateLimitHandler";
 import {
   Dialog,
   DialogContent,
@@ -48,6 +50,14 @@ interface TestimonialData {
 }
 
 export default function AllTestimonialsPage() {
+  const router = useRouter();
+  const { data: userData, loading: authLoading } = useUser();
+
+  useEffect(() => {
+    if (!authLoading && !userData?.user) {
+      router.push('/signin');
+    }
+  }, [authLoading, userData?.user, router]);
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
   const [data, setData] = useState<TestimonialData>();
   const [loading, setLoading] = useState(true);
@@ -86,8 +96,9 @@ export default function AllTestimonialsPage() {
         );
         setFavorites(favIds);
         setArchived(archIds);
-      } catch (error) {
+      } catch (error: any) {
         console.error("Error fetching testimonials:", error);
+        rateLimitHandlers.protected.handleError(error, "Failed to load testimonials");
       } finally {
         setLoading(false);
       }
@@ -123,9 +134,9 @@ export default function AllTestimonialsPage() {
         }
         return newSet;
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error toggling favorite:", error);
-      toast.error("Failed to update favorite status");
+      rateLimitHandlers.protected.handleError(error, "Failed to update favorite status");
     }
   };
 
@@ -151,9 +162,9 @@ export default function AllTestimonialsPage() {
       setArchived((prev) => new Set(prev).add(testimonialToArchive.id));
       setArchiveDialogOpen(false);
       setTestimonialToArchive(null);
-    } catch (error) {
+    } catch (error: any) {
       console.error("Error archiving testimonial:", error);
-      toast.error("Failed to archive testimonial");
+      rateLimitHandlers.protected.handleError(error, "Failed to archive testimonial");
     }
   }
   return (

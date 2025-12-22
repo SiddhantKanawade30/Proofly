@@ -2,6 +2,7 @@
 
 import React, { createContext, useContext, useState, useEffect } from "react";
 import axios from "axios";
+import { rateLimitHandlers } from "@/lib/rateLimitHandler";
 
 export interface UserData {
   id: string;
@@ -56,8 +57,9 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       });
       setData(response.data);
       setError(null);
-    } catch (err) {
+    } catch (err: any) {
       console.error(err);
+      rateLimitHandlers.protected.handleError(err, "Failed to fetch user data");
       setError("Failed to fetch user data");
     } finally {
       setLoading(false);

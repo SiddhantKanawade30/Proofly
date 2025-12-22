@@ -77,7 +77,8 @@ export default function Sidebar() {
               <div className="text-sm font-medium">Upgrade to <span className="bg-gradient-to-b from-violet-700 to-violet-400 py-0.5 rounded-sm px-2 text-white">Premium</span></div>
             </div>
             <div className="text-xs text-text-secondary">Upgrade to premium to get access to more features.</div>
-            <button className="bg-primary text-white w-full px-4 py-2 rounded-md mt-4">Click here</button>
+            <Link href="/plans"><button className="cursor-pointer bg-primary text-white w-full px-4 py-2 rounded-md mt-4">Click here</button></Link>
+            
           </div>
 
 

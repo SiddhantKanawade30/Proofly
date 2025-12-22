@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import axios from "axios";
 import { DottedLineChart } from "@/components/ui/dotted-line";
 import DashboardSkeleton from "@/components/loaders/DashboardSkeleton";
+import Link from "next/link";
 
 interface data {
   "id": string,
@@ -147,7 +148,7 @@ export default function Home() {
               {data?.remainingSpace}
             </p>
             <div className="text-md">
-              <span className=" font-semibold cursor-pointer ">Upgrade to <span className="text-violet-500 hover:underline">Premium</span> </span>
+              <span className=" font-semibold cursor-pointer ">Upgrade to <Link href="/plans" > <span className="text-violet-500 hover:underline">Premium</span></Link> </span> 
             </div>
           </div>
         </div>

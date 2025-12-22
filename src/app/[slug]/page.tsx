@@ -22,6 +22,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [testimonialType, setTestimonialType] = useState<'text' | 'video'>('text');
   
   const [formData, setFormData] = useState({
@@ -64,6 +65,8 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
       return;
     }
 
+    // Clear previous errors
+    setErrorMessage(null);
     setSubmitting(true);
     
     try {
@@ -92,7 +95,19 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
 
     } catch (error) {
       console.log("Error submitting testimonial:", error);
-      alert("Failed to submit testimonial. Please try again.");
+      const err = error as any;
+      const status = err?.response?.status;
+      const serverMessage = err?.response?.data?.message || err?.response?.data?.error || "";
+
+      // If backend returns 403 for quota limits, show a friendly quota message
+      if (status === 403 && /only allows|Free plan|Fair usage|exceeded/i.test(serverMessage)) {
+        setErrorMessage(
+          "Quota reached: Sorry, this campaign has reached its testimonial limit on the current plan. Your testimonial was not submitted."
+        );
+      } else {
+        // For any other error, show generic failure message
+        setErrorMessage("Failed to submit testimonial. Please try again or contact support.");
+      }
     } finally {
       setSubmitting(false);
     }
@@ -137,6 +152,20 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
           <ToggleButton testimonialType={testimonialType} setTestimonialType={setTestimonialType} />
 
           <div className="px-6">
+            {errorMessage && (
+              <div className="mb-4 rounded-md bg-amber-50 border border-amber-200 p-4 text-amber-900">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="text-sm leading-relaxed">{errorMessage}</div>
+                  <button
+                    type="button"
+                    onClick={() => setErrorMessage(null)}
+                    className="flex-shrink-0 text-amber-700 hover:text-amber-900 font-semibold text-sm"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+            )}
             <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
               {testimonialType === 'text' ? (
                 // TEXT TESTIMONIAL LAYOUT
@@ -152,8 +181,8 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
                 <VideoSpace 
                 campaign={campaign}
                   testimonialType={testimonialType}
-                  formData={formData} 
-                  setFormData={setFormData} 
+                  formData={formData}
+                  setFormData={setFormData}
                   handleChange={handleChange}
                   submitting={submitting}
                   onSubmit={() => {}}

@@ -61,7 +61,9 @@ export const VideoSubmitButton = ({
 
       // Step 1: Get upload URL from backend
       const { data } = await axios.post(
-        `${BACKEND_URL}/testimonials/create-video-upload`
+        `${BACKEND_URL}/testimonials/create-video-upload`,{
+          campaignId: campaign.id
+        }
       );
 
       const uploadUrl = data.url;

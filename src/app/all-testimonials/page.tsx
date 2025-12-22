@@ -7,7 +7,7 @@ import { Star, Archive, MessageCircle, List, Grid, Heart, Code } from "lucide-re
 import router from "next/router";
 import { useEffect, useState } from "react";
 import SpacesSkeletonLoader from "@/components/loaders/loader";
-import { StarRating } from "@/components/ui/starRating";
+import { StarDisplay } from "@/components/ui/starDisplay";
 import { Toaster, toast } from "sonner";
 import {
   Dialog,
@@ -247,9 +247,7 @@ export default function AllTestimonialsPage() {
                         {/* Rating and Date */}
                         <div className="flex items-center justify-between">
                           <p className="text-xs text-text-secondary">{new Date(testimonial.createdAt).toLocaleDateString()}</p>
-                          <div className="scale-75 origin-right">
-                            <StarRating value={testimonial.rating || 0} onChange={() => {}} />
-                          </div>
+                          <StarDisplay value={testimonial.rating || 0} />
                         </div>
                       </div>
                       <div className="flex items-center gap-2 ml-4 flex-shrink-0">
@@ -278,14 +276,14 @@ export default function AllTestimonialsPage() {
               </div>
             ) : (
               // Cards View
-              <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              <div className="columns-1 gap-6 md:columns-2 lg:columns-3 w-full">
                 {data?.data.map((testimonial) => (
                   <div
                     key={testimonial.id}
-                    className="rounded-lg bg-white border border-zinc-200 p-6 hover:shadow-md transition-shadow flex flex-col"
+                    className="break-inside-avoid mb-6 rounded-lg bg-white border border-zinc-200 p-6 hover:shadow-md transition-shadow"
                   >
                     {/* Space Badge */}
-                    <div className="mb-4 flex-shrink-0">
+                    <div className="mb-4">
                       <span className="text-xs px-2 bg-violet-100 text-violet-700 py-1  rounded truncate max-w-[150px] inline-block">
                         {testimonial.campaign.title}
                       </span>
@@ -293,7 +291,7 @@ export default function AllTestimonialsPage() {
 
                     {/* Video or Text Content */}
                     {testimonial.testimonialType === "video" && testimonial.playbackId ? (
-                      <div className="mb-6 flex-1">
+                      <div className="mb-6">
                         <iframe
                           src={`https://player.mux.com/${testimonial.playbackId}`}
                           style={{ width: "100%", border: "none", aspectRatio: "4/3", borderRadius: "8px" }}
@@ -302,25 +300,27 @@ export default function AllTestimonialsPage() {
                         ></iframe>
                       </div>
                     ) : testimonial.message ? (
-                      <p className="text-text-secondary mb-6 text-base leading-relaxed break-words flex-1 whitespace-pre-wrap">
+                      <p className="text-text-secondary mb-6 text-base leading-relaxed break-words whitespace-pre-wrap">
                         "{testimonial.message}"
                       </p>
                     ) : (
-                      <p className="text-text-secondary mb-6 text-base leading-relaxed break-words flex-1 italic">
+                      <p className="text-text-secondary mb-6 text-base leading-relaxed break-words italic">
                         No message available
                       </p>
                     )}
 
                     {/* Rating */}
-                    <div className="mb-6 flex-1 scale-75 origin-left -ml-2">
-                      <StarRating value={testimonial.rating || 0} onChange={() => {}} />
-                    </div>
+                    {testimonial.rating && testimonial.rating > 0 && (
+                      <div className="mb-6">
+                        <StarDisplay value={testimonial.rating} />
+                      </div>
+                    )}
 
                     {/* Border */}
-                    <div className="border-t border-zinc-200 mb-4 flex-shrink-0"></div>
+                    <div className="border-t border-zinc-200 mb-4"></div>
 
                     {/* Name and Position */}
-                    <div className="flex-shrink-0 min-w-0 flex items-center justify-between">
+                    <div className="min-w-0 flex items-center justify-between">
                       <div>
                         <h3 className="font-semibold text-text-primary mb-1 truncate">
                           {testimonial.name}

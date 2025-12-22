@@ -4,25 +4,11 @@ import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/ui/topbar";
 import { Star, Archive } from "lucide-react";
 import { MessageCircleMore, Airplay, Box } from 'lucide-react';
-import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import axios from "axios";
 import { DottedLineChart } from "@/components/ui/dotted-line";
 import DashboardSkeleton from "@/components/loaders/DashboardSkeleton";
 import Link from "next/link";
-
-interface data {
-  "id": string,
-  "name": string,
-  "email": string,
-  "password": string,
-  "createdAt": string,
-  "campaigns": Campaigns[],
-  "totalCampaigns": number,
-  "totalTestimonials": number,
-  "remainingSpace": number,
-  "sortTestimonial": sortTestimonial[]
-}
+import { useUser } from "@/context/UserContext";
 
 interface sortTestimonial {
   "id": string,
@@ -31,6 +17,7 @@ interface sortTestimonial {
   "campaignId": string,
   "name": string,
   "email": string,
+  "position": string,
   "message": string,
   "rating": number,
   "createdAt": string
@@ -66,42 +53,13 @@ interface Testimonials {
 
 export default function Home() {
   const router = useRouter();
-  const [data, setData] = useState<data>();
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    const token = localStorage.getItem("token");
-    if (!token) {
-      router.push("/signin");
-      return;
-    }
-
-    const backenUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${backenUrl}/user/me`, {
-          headers: {
-            "Authorization": `Bearer ${token}`
-          }
-        })
-
-        setData(response.data)
-      } catch (e) {
-        console.log(e)
-      } finally {
-        setLoading(false);
-      }
-    }
-
-    fetchData();
-  }, [router]);
+  const { data, loading } = useUser();
 
 
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-100 font-sans">
-        <Sidebar />
+        <Sidebar user={data?.user ? { id: data.user.id, name: data.user.name, email: data.user.email } : undefined} />
         <Topbar>
           <DashboardSkeleton />
         </Topbar>
@@ -111,7 +69,7 @@ export default function Home() {
 
   return (
     <div className="flex min-h-screen bg-gray-100 font-sans">
-      <Sidebar />
+      <Sidebar user={data?.user ? { id: data.user.id, name: data.user.name, email: data.user.email } : undefined} />
       <Topbar>
         {/* Stats Cards */}
         <div className="grid gap-6 md:grid-cols-3 mb-8">

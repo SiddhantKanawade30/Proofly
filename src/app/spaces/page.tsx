@@ -107,13 +107,13 @@ export default function SpacesPage() {
       const token = localStorage.getItem("token");
       if (!token) {
         console.log("No token found");
-        router.push("/login");
+        router.push("/signin");
       }
 
       const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
       if (!backendUrl) {
         console.log("No backend URL found");
-        router.push("/login");
+        router.push("/signin");
       }
 
       try{

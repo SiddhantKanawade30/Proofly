@@ -1,15 +1,19 @@
 "use client";
 import { LayoutGrid, Settings , Airplay , MessageCircle , Heart , Gift, Archive   } from 'lucide-react';
 
-
 import { useState } from "react";
 import Link from "next/link";
 import { ComboboxDemo } from "./ui/combobox";
+import { useUser } from "@/context/UserContext";
 
-interface NavItem {
+interface UserData {
+  id: string;
   name: string;
-  href: string;
-  icon: React.ReactNode;
+  email: string;
+}
+
+interface SidebarProps {
+  user?: UserData;
 }
 
 const navItems: NavItem[] = [
@@ -21,8 +25,12 @@ const navItems: NavItem[] = [
   { name: "Settings", href: "/settings", icon: <Settings /> }
 ];
 
-export default function Sidebar() {
+export default function Sidebar({ user }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(true);
+  const { data } = useUser();
+
+  // Use data from context if user prop not provided
+  const userData = user || (data?.user ? { id: data.user.id, name: data.user.name, email: data.user.email } : undefined);
 
   return (
     <>
@@ -50,8 +58,11 @@ export default function Sidebar() {
           </div>
 
           <div className="py-4 border-b  px-1  border-zinc-200">
-            <ComboboxDemo />
+            <ComboboxDemo userName={userData?.name} userEmail={userData?.email} />
           </div>
+
+        
+          
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-3">

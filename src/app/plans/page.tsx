@@ -21,6 +21,17 @@ const PlanCard = ({
   onCtaClick,
   isPrimary,
   isCurrent,
+}: {
+  name: string;
+  price: string | number;
+  badge?: string;
+  features: string[];
+  limitations?: string[] | null;
+  ctaText: string;
+  ctaDisabled?: boolean;
+  onCtaClick: () => void;
+  isPrimary?: boolean;
+  isCurrent?: boolean;
 }) => {
   return (
     <div
@@ -104,7 +115,7 @@ const PlanCard = ({
 };
 
 export default function PlansPage() {
-  const currentPlan = "FREE";
+  const currentPlan: "FREE" | "PREMIUM" = "FREE";
 
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
@@ -218,7 +229,7 @@ export default function PlansPage() {
       ctaDisabled: false,
       onCtaClick: handelPayment,
       isPrimary: true,
-      isCurrent: currentPlan === "PREMIUM",
+      isCurrent: (currentPlan as string) === "PREMIUM",
     },
   ];
 

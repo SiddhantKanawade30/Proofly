@@ -37,22 +37,26 @@ export function SigninForm({
       setIsLoading(true);
 
       const res = await axios.post(`${process.env.NEXT_PUBLIC_BACKEND_URL}/auth/signin`, {
-        email,
-        password
-      });
+      email,
+      password
+    });
 
       if(res.status === 200) {
         toast.success("Login successful! Redirecting...");
         localStorage.setItem("token", res.data.token);
-        setTimeout(() => {
-          router.push("/");
-        }, 1500);
-      } else {
+        router.push("/");
+        
+      }
+      else {
         toast.error("Login failed");
       }
     } catch (error: any) {
-      console.error("Signin error:", error);
+      if (error.response?.status === 400) {
+        alert(error.response.data.message);
+    } else {
+      // Handle other errors (rate limiting, network errors, etc.)
       rateLimitHandlers.auth.handleError(error);
+    }
     } finally {
       setIsLoading(false);
     }

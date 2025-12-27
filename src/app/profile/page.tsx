@@ -53,7 +53,7 @@ export default function ProfilePage() {
   if (loading) {
     return (
       <div className="flex min-h-screen bg-gray-100 font-sans">
-        <Sidebar user={user ? { id: user.id, name: user.name, email: user.email } : undefined} />
+        <Sidebar user={user} />
         <Topbar>
           <div className="flex items-center justify-center h-96">
             <p className="text-zinc-500">Loading...</p>
@@ -78,7 +78,7 @@ export default function ProfilePage() {
 
   return (
     <div className="flex min-h-screen bg-gray-100 font-sans">
-      <Sidebar user={{ id: user.id, name: user.name, email: user.email }} />
+      <Sidebar user={user} />
       <Topbar>
         <div className="max-w-2xl mx-auto">
           {/* Header */}

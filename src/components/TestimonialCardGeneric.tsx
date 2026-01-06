@@ -15,6 +15,7 @@ export interface TestimonialData {
   playbackId?: string;
   createdAt: string;
   favourite: boolean;
+  campaignId: string;
   space?: string; // For pages that show space name
 }
 

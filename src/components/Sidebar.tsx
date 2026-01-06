@@ -3,6 +3,7 @@ import { LayoutGrid, Settings , Airplay , MessageCircle , Heart , Gift, Archive 
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ComboboxDemo } from "./ui/combobox";
 import { useUser } from "@/context/UserContext";
 import type { UserData } from "@/context/UserContext";
@@ -28,10 +29,24 @@ const navItems: NavItem[] = [
 
 export default function Sidebar({ user }: SidebarProps) {
   const [isOpen, setIsOpen] = useState(true);
+  const pathname = usePathname();
   const { data } = useUser();
 
   // Use data from context if user prop not provided
   const userData = user || data?.user;
+
+  const isActive = (href: string) => {
+    // Exact match for overview and settings
+    if ((href === "/overview" || href === "/settings") && pathname === href) {
+      return true;
+    }
+    // For spaces, check if pathname starts with /spaces (includes /spaces/[id])
+    if (href === "/spaces" && pathname.startsWith("/spaces")) {
+      return true;
+    }
+    // For other routes, exact match
+    return pathname === href;
+  };
 
   return (
     <>
@@ -68,17 +83,24 @@ export default function Sidebar({ user }: SidebarProps) {
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-3">
             <ul className="space-y-1">
-              {navItems.map((item) => (
-                <li key={item.name}>
-                  <Link
-                    href={item.href}
-                    className="flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium text-zinc-700 transition-colors hover:bg-zinc-100"
-                  >
-                    <span className="size-5">{item.icon}</span>
-                    <span className="text-sm font-medium">{item.name}</span>
-                  </Link>
-                </li>
-              ))}
+              {navItems.map((item) => {
+                const active = isActive(item.href);
+                return (
+                  <li key={item.name}>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
+                        active
+                          ? "bg-zinc-100 text-text-primary"
+                          : "text-zinc-700 hover:bg-zinc-100"
+                      }`}
+                    >
+                      <span className="size-5">{item.icon}</span>
+                      <span className="text-sm font-medium">{item.name}</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ul>
           </nav>
 

@@ -40,7 +40,7 @@ export default function TestimonialCard({
             </div>
           ) : (
             <>
-              <p className="text-text-secondary mb-2 break-words whitespace-pre-wrap">{testimonial.message}</p>
+              <p className="text-text-secondary mt-2 mb-2 break-words whitespace-pre-wrap">{testimonial.message}</p>
               <div>
                 <StarRating value={testimonial.rating || 0} onChange={() => {}} />
               </div>

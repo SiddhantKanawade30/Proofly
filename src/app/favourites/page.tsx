@@ -2,79 +2,18 @@
 
 import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/ui/topbar";
-import { Star, Archive, MessageCircle, List, Grid } from "lucide-react";
+import { Heart, MessageCircle, List, Grid } from "lucide-react";
 import { useState, useEffect } from "react";
-import axios from "axios";
 import SpacesSkeletonLoader from "@/components/loaders/loader";
 import { useRouter } from "next/navigation";
 import { useUser } from "@/context/UserContext";
-import { rateLimitHandlers } from "@/lib/rateLimitHandler";
-
-// Mock data - replace with actual API calls
-const mockFavoriteTestimonials = [
-  {
-    id: "1",
-    author: "John Smith",
-    text: "This product changed my life! Absolutely amazing experience from start to finish.This product changed my life! Absolutely amazing experience from start to finish.This product changed my life! Absolutely amazing experience from start to finish.",
-    date: "2024-01-15",
-    rating: 5,
-    space: "Project Alpha",
-  },
-  {
-    id: "2",
-    author: "Sarah Johnson",
-    text: "Amazing service, highly recommend! The team was so helpful throughout the process.",
-    date: "2024-01-20",
-    rating: 5,
-    space: "Marketing Campaign",
-  },
-  {
-    id: "4",
-    author: "Emily Chen",
-    text: "Exceeded my expectations! The quality and attention to detail is outstanding.",
-    date: "2024-02-10",
-    rating: 5,
-    space: "Beta Testing",
-  },
-];
-
-interface campaigns {
-  id: string;
-  title: string;
-  description: string;
-  shareLink: string;
-  userId: string;
-  createdAt: string;
-  testimonials: Testimonial[];
-}
-
-interface Testimonial {
-  id: string;
-  favourite: boolean;
-  archived: boolean;
-  campaignId: string;
-  name: string;
-  email: string;
-  message: string;
-  createdAt: string;
-}
-
-interface DisplayTestimonial {
-  id: string;
-  author: string;
-  email: string;
-  text: string;
-  date: string;
-  space: string;
-  favourite: boolean;
-}
+import { useFetchTestimonials, useTestimonialActions } from "@/hooks/useTestimonials";
+import { GenericTestimonialCard, TestimonialData } from "@/components/TestimonialCardGeneric";
 
 type ViewMode = "list" | "cards";
 
 export default function FavouritesPage() {
   const [viewMode, setViewMode] = useState<ViewMode>("cards");
-  const [favouriteTestimonials, setFavouriteTestimonials] = useState<DisplayTestimonial[]>([]);
-  const [loading, setLoading] = useState(true);
   const router = useRouter();
   const { data, loading: authLoading } = useUser();
 
@@ -84,197 +23,161 @@ export default function FavouritesPage() {
     }
   }, [authLoading, data?.user, router]);
 
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL ;
+  // Fetch favorite testimonials
+  const { testimonials: hookTestimonials, favorites: hookFavorites, loading, refetch } = useFetchTestimonials({
+    endpoint: "/testimonials/favourite",
+    showSpace: true,
+  });
 
+  // Local state for UI updates without page refresh
+  const [testimonials, setTestimonials] = useState<typeof hookTestimonials>([]);
+  const [favorites, setFavorites] = useState<Set<string>>(new Set());
+
+  // Sync with hook data when it changes
   useEffect(() => {
-    const fetchFavouriteTestimonials = async () => {
-      try {
-        const response = await axios.get(`${backendUrl}/testimonials/favourite`, {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          }
-        });
+    setTestimonials(hookTestimonials);
+    setFavorites(hookFavorites);
+  }, [hookTestimonials, hookFavorites]);
 
-        const campaigns: campaigns[] = response.data;
-        const flattenedTestimonials: DisplayTestimonial[] = [];
+  // Get action handlers
+  const { toggleFavorite, archiveTestimonial } = useTestimonialActions();
 
-        campaigns.forEach((campaign) => {
-          campaign.testimonials.forEach((testimonials) => {
-            flattenedTestimonials.push({
-              id: testimonials.id,
-              author: testimonials.name,
-              email: testimonials.email,
-              text: testimonials.message,
-              date: new Date(testimonials.createdAt).toLocaleDateString(),
-              space: campaign.title,
-              favourite: testimonials.favourite,
-            });
-          })
-        })
-
-        setFavouriteTestimonials(flattenedTestimonials);
-      } catch (error: any) {
-        console.error("Error fetching favourite testimonials:", error);
-        rateLimitHandlers.protected.handleError(error, "Failed to load favourite testimonials");
-      } finally {
-        setLoading(false);
+  const handleToggleFavorite = async (testimonialId: string) => {
+    const testimonial = testimonials.find(t => t.id === testimonialId);
+    if (!testimonial) return;
+    
+    const isFavorite = favorites.has(testimonialId);
+    
+    // Update UI immediately
+    setFavorites(prev => {
+      const newFavorites = new Set(prev);
+      if (isFavorite) {
+        newFavorites.delete(testimonialId);
+      } else {
+        newFavorites.add(testimonialId);
       }
-    };
-    fetchFavouriteTestimonials();
+      return newFavorites;
+    });
 
-  }, [backendUrl]);
+    // Call API in background
+    const success = await toggleFavorite(testimonialId, isFavorite, testimonial.campaignId);
+    
+    // If API fails, revert the state
+    if (!success) {
+      setFavorites(prev => {
+        const newFavorites = new Set(prev);
+        if (isFavorite) {
+          newFavorites.add(testimonialId);
+        } else {
+          newFavorites.delete(testimonialId);
+        }
+        return newFavorites;
+      });
+    }
+  };
+
+  const handleArchive = async (testimonialId: string) => {
+    const testimonial = testimonials.find((t) => t.id === testimonialId);
+    if (!testimonial) return;
+
+    const success = await archiveTestimonial(testimonialId, testimonial.campaignId);
+    if (success) {
+      // Remove archived testimonial from local state
+      setTestimonials(prev => prev.filter(t => t.id !== testimonialId));
+    }
+  };
+
+  if (authLoading || loading) {
+    return (
+      <div className="flex min-h-screen bg-zinc-50 font-sans">
+        <Sidebar />
+        <Topbar>
+          <SpacesSkeletonLoader />
+        </Topbar>
+      </div>
+    );
+  }
 
   return (
     <div className="flex min-h-screen bg-zinc-50 font-sans">
       <Sidebar />
       <Topbar>
-        {loading ? (
-          <SpacesSkeletonLoader />
-        ) : (
-          <>
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <Star className="size-6 text-yellow-400 fill-yellow-400" />
-                  <h1 className="text-2xl font-bold text-text-primary">Favorites</h1>
-                </div>
-                {/* View Mode Toggle */}
-                <div className="flex items-center gap-1 p-1 bg-zinc-100 rounded-lg">
-                  <button
-                    onClick={() => setViewMode("list")}
-                    className={`p-2 rounded transition-colors ${
-                      viewMode === "list"
-                        ? "bg-white shadow-sm text-text-primary"
-                        : "text-text-secondary hover:text-text-primary"
-                    }`}
-                    title="List View"
-                  >
-                    <List className="size-4" />
-                  </button>
-                  <button
-                    onClick={() => setViewMode("cards")}
-                    className={`p-2 rounded transition-colors ${
-                      viewMode === "cards"
-                        ? "bg-white shadow-sm text-text-primary"
-                        : "text-text-secondary hover:text-text-primary"
-                    }`}
-                    title="Cards View"
-                  >
-                    <Grid className="size-4" />
-                  </button>
-                </div>
-              </div>
-              <p className="text-text-secondary">{favouriteTestimonials.length} favorite testimonials</p>
+        <div className="mb-6">
+          <div className="flex items-center justify-between mb-2">
+            <div className="flex items-center gap-2">
+              <Heart className="size-6 text-red-500 fill-red-500" />
+              <h1 className="text-2xl font-bold text-text-primary">Favorites</h1>
             </div>
+            {/* View Mode Toggle */}
+            <div className="flex items-center gap-1 p-1 bg-zinc-100 rounded-lg">
+              <button
+                onClick={() => setViewMode("list")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "list"
+                    ? "bg-white shadow-sm text-text-primary"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+                title="List View"
+              >
+                <List className="size-4" />
+              </button>
+              <button
+                onClick={() => setViewMode("cards")}
+                className={`p-2 rounded transition-colors ${
+                  viewMode === "cards"
+                    ? "bg-white shadow-sm text-text-primary"
+                    : "text-text-secondary hover:text-text-primary"
+                }`}
+                title="Cards View"
+              >
+                <Grid className="size-4" />
+              </button>
+            </div>
+          </div>
+          <p className="text-text-secondary">{testimonials.length} favorite testimonials</p>
+        </div>
 
-            {favouriteTestimonials.length > 0 ? (
+        {testimonials.length > 0 ? (
           <div>
             {viewMode === "list" ? (
-              <div className="rounded-lg bg-white shadow-sm border border-zinc-200">
-                <div className="divide-y divide-zinc-200">
-                  {favouriteTestimonials.map((testimonial) => (
-                    <div key={testimonial.id} className="p-6 hover:bg-zinc-50 transition-colors">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-3 mb-3 flex-wrap">
-                      <div className="flex items-center gap-2 min-w-0">
-                        <h3 className="font-medium text-text-primary truncate">{testimonial.author}</h3>
-                        <div className="flex items-center gap-1 flex-shrink-0">
-                          <Star className="size-4 fill-yellow-400 text-yellow-400" />
-                        </div>
-                      </div>
-                      <span className="text-xs px-2 py-1 bg-violet-100 text-violet-700 rounded truncate max-w-[200px]">
-                        {testimonial.space}
-                      </span>
-                    </div>
-                    <p className="text-text-secondary mb-3 break-words whitespace-pre-wrap">{testimonial.text}</p>
-                    <div className="flex items-center gap-4 text-xs text-text-secondary flex-wrap">
-                      <span>{testimonial.date}</span>
-                      <div className="flex items-center gap-1">
-                        <Star className="size-3 fill-yellow-400 text-yellow-400" />
-                        <span>Favorited</span>
-                      </div>
-                    </div>
-                  </div>
-                  <div className="flex items-center gap-2 ml-4">
-                    <button className="p-2 hover:bg-zinc-100 rounded-lg transition-colors" title="Unfavorite">
-                      <Star className="size-4 fill-yellow-400 text-yellow-400" />
-                    </button>
-                    <button className="p-2 hover:bg-zinc-100 rounded-lg transition-colors" title="Archive">
-                      <Archive className="size-4 text-zinc-400" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-                  ))}
-                </div>
+              <div className="space-y-4">
+                {testimonials.map((testimonial) => (
+                  <GenericTestimonialCard
+                    key={testimonial.id}
+                    testimonial={testimonial as TestimonialData & { space?: string }}
+                    viewMode="list"
+                    isFavorite={favorites.has(testimonial.id)}
+                    onToggleFavorite={handleToggleFavorite}
+                    onArchive={handleArchive}
+                    showSpace={true}
+                  />
+                ))}
               </div>
             ) : (
-              // Cards View - Variable heights based on content
-              <div className="">
-                <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-3 items-start">
-                  {favouriteTestimonials.map((testimonial) => (
-                    <div
-                      key={testimonial.id}
-                      className="rounded-lg border border-zinc-200 p-6 hover:shadow-md transition-shadow bg-white flex flex-col"
-                    >
-                      {/* Top Row: Space badge and Actions */}
-                      <div className="flex items-center justify-between mb-4 flex-shrink-0">
-                        <span className="text-xs px-2 py-1 bg-violet-100 text-violet-700 rounded truncate max-w-[150px]">
-                          {testimonial.space}
-                        </span>
-                        <div className="flex items-center gap-2 flex-shrink-0">
-                          <button className="p-2 hover:bg-zinc-100 rounded-lg transition-colors" title="Unfavorite">
-                            <Star className="size-4 fill-yellow-400 text-yellow-400" />
-                          </button>
-                          <button className="p-2 hover:bg-zinc-100 rounded-lg transition-colors" title="Archive">
-                            <Archive className="size-4 text-zinc-400" />
-                          </button>
-                        </div>
-                      </div>
-
-                      {/* Rating */}
-                      <div className="flex items-center gap-1 mb-4 flex-shrink-0">
-                        <Star className="size-4 fill-yellow-400 text-yellow-400" />
-                      </div>
-
-                      {/* Testimonial Text - Variable height based on content */}
-                      <p className="text-text-secondary mb-4 text-base leading-relaxed flex-1 break-words whitespace-pre-wrap">
-                        {testimonial.text}
-                      </p>
-
-                      {/* Border */}
-                      <div className="border-t border-zinc-200 mb-4 flex-shrink-0"></div>
-
-                      {/* Author and Date */}
-                      <div className="mt-auto flex-shrink-0 min-w-0">
-                        <h3 className="font-semibold text-text-primary mb-1 truncate">
-                          {testimonial.author}
-                        </h3>
-                        <div className="flex items-center gap-4 text-xs text-text-secondary flex-wrap">
-                          <span>{testimonial.date}</span>
-                          <div className="flex items-center gap-1">
-                            <Star className="size-3 fill-yellow-400 text-yellow-400" />
-                            <span>Favorited</span>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <div className="columns-1 gap-6 md:columns-2 lg:columns-3 w-full">
+                {testimonials.map((testimonial) => (
+                  <div key={testimonial.id} className="break-inside-avoid mb-6">
+                    <GenericTestimonialCard
+                      testimonial={testimonial as TestimonialData & { space?: string }}
+                      viewMode="cards"
+                      isFavorite={favorites.has(testimonial.id)}
+                      onToggleFavorite={handleToggleFavorite}
+                      onArchive={handleArchive}
+                      showSpace={true}
+                    />
+                  </div>
+                ))}
               </div>
             )}
           </div>
-            ) : (
-              <div className="rounded-lg bg-white p-12 shadow-sm border border-zinc-200 text-center">
-                <MessageCircle className="size-12 text-zinc-300 mx-auto mb-4" />
-                <p className="text-text-secondary mb-1">No favorite testimonials yet</p>
-                <p className="text-sm text-text-secondary">
-                  Star testimonials you love to save them here
-                </p>
-              </div>
-            )}
-          </>
+        ) : (
+          <div className="rounded-lg bg-white p-12 shadow-sm border border-zinc-200 text-center">
+            <Heart className="size-12 text-zinc-300 mx-auto mb-4" />
+            <p className="text-text-secondary mb-1">No favorite testimonials yet</p>
+            <p className="text-sm text-text-secondary">
+              Heart testimonials you love to save them here
+            </p>
+          </div>
         )}
       </Topbar>
     </div>

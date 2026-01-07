@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ArrowLeft, Copy, Code } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import React from "react";
+import Image from "next/image";
 
 export default function Header({
   title,
@@ -11,12 +12,14 @@ export default function Header({
   shareLink,
   onCopy,
   onOpenEmbed,
+  onOpenImport
 }: {
   title?: string;
   description?: string;
   shareLink?: string;
   onCopy: (url?: string) => void;
   onOpenEmbed: () => void;
+  onOpenImport: () => void;
 }) {
   return (
     <div className="mb-6">
@@ -34,6 +37,21 @@ export default function Header({
           <p className="text-text-secondary line-clamp-2 break-all leading-relaxed mr-4 ">{description}</p>
         </div>
         <div className="flex items-center gap-3">
+
+          <div>
+            <button
+            onClick={onOpenImport}
+            className="flex items-center gap-2 px-4 py-2 bg-text-primary text-white rounded-lg hover:bg-zinc-800 transition-colors"
+          >
+            <div>
+                  Import from 
+            </div>
+            <img src="/X-light.svg" alt="x icon"/>
+            <img src="/insta.svg" alt="" width={30} height={30}/>
+             
+          </button>
+          </div>
+
           <button
             onClick={onOpenEmbed}
             className="flex items-center gap-2 px-4 py-2 bg-text-primary text-white rounded-lg hover:bg-zinc-800 transition-colors"

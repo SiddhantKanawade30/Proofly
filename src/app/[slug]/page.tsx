@@ -25,13 +25,13 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [testimonialType, setTestimonialType] = useState<'text' | 'video'>('text');
+  const [testimonialType, setTestimonialType] = useState<'TEXT' | 'VIDEO'>('TEXT');
   
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     position: "",
-    message: "",
+    content: "",
     rating: 0
   });
 
@@ -74,7 +74,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
       console.log("Submitting testimonial with rating:", rating);
       
       // Use different endpoints based on testimonial type
-      const endpoint = testimonialType === 'text' 
+      const endpoint = testimonialType === 'TEXT' 
         ? `${BACKEND_URL}/testimonials/create`
         : `${BACKEND_URL}/testimonials/create-video-upload`;
       
@@ -83,13 +83,13 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
         email: formData.email,
         position: formData.position,
         testimonialType: testimonialType,
-        message: formData.message,
+        content: formData.content,
         rating: rating,
         campaignId: campaign.id
       });
 
       setSubmitted(true);
-      setFormData({ name: "", email: "", position: "",  message: "", rating: 0 });
+      setFormData({ name: "", email: "", position: "",  content: "", rating: 0 });
       toast.success("Testimonial submitted successfully!");
 
     } catch (error: any) {
@@ -138,13 +138,13 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
   }
 
   return (
-    <div className="min-h-screen bg-background bg-neutral-100 flex items-center justify-center p-4 py-8">
+    <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-4 py-8">
       <div className="max-w-4xl w-full flex flex-col gap-4">
         {/* Header Section */}
         <HeaderSection campaign={campaign} />
 
         {/* Testimonial Form Card */}
-        <div className="bg-card bg-white text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
+        <div className="bg-white text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
           
           {/* Toggle Button */}
           <ToggleButton testimonialType={testimonialType} setTestimonialType={setTestimonialType} />
@@ -157,7 +157,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
                   <button
                     type="button"
                     onClick={() => setErrorMessage(null)}
-                    className="flex-shrink-0 text-amber-700 hover:text-amber-900 font-semibold text-sm"
+                    className="shrink-0 text-amber-700 hover:text-amber-900 font-semibold text-sm"
                   >
                     ✕
                   </button>
@@ -165,8 +165,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
               </div>
             )}
             <form onSubmit={handleSubmit} className="flex flex-col space-y-3">
-              {testimonialType === 'text' ? (
-                // TEXT TESTIMONIAL LAYOUT
+              {testimonialType === 'TEXT' ? (
                 <TextTestimonial 
                   formData={formData} 
                   setFormData={setFormData} 
@@ -175,9 +174,8 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
                   onSubmit={() => {}}
                 />
               ) : (
-                // VIDEO TESTIMONIAL LAYOUT
                 <VideoSpace 
-                campaign={campaign}
+                  campaign={campaign}
                   testimonialType={testimonialType}
                   formData={formData}
                   setFormData={setFormData}

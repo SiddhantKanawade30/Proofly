@@ -109,20 +109,20 @@ export default function Sidebar({ user }: SidebarProps) {
   <div className="border items-center justify-center mb-2 p-4 bg-neutral-100 rounded-lg">
     <div className="flex items-center gap-1 mb-2">
       <Gift className="size-5 text-primary" />
-      <div className="text-sm font-medium">Upgrade to <span className="bg-gradient-to-b from-violet-700 to-violet-400 py-0.5 rounded-sm px-2 text-white">Premium</span></div>
+      <div className="text-sm font-medium">Upgrade to <span className="bg-linear-to-b from-violet-700 to-violet-400 py-0.5 rounded-sm px-2 text-white">Premium</span></div>
     </div>
     <div className="text-xs text-text-secondary">Upgrade to premium to get access to more features.</div>
     <Link href="/plans"><button className="cursor-pointer bg-primary text-white w-full px-4 py-2 rounded-md mt-4">Click here</button></Link>
   </div>
 ) : (
   <div className="relative mb-2 p-[1.2px] bg-white rounded-lg overflow-hidden">
-    <div className="absolute inset-0 animate-spin scale-[3] [background-image:conic-gradient(at_center,transparent,var(--color-violet-600)_20%,transparent_30%)] [animation-duration:4s]" ></div>
+    <div className="absolute inset-0 animate-spin scale-[3] bg-[conic-gradient(at_center,transparent,var(--color-violet-600)_20%,transparent_30%)] animation-duration-[4s]" ></div>
     
-    <div className="relative items-center justify-center p-4 border-neutral-200 border-1 bg-neutral-100 rounded-lg">
+    <div className="relative items-center justify-center p-4 border-neutral-200 border bg-neutral-100 rounded-lg">
       <div className="flex items-center gap-1 mb-2">
         <Gift className="size-5 text-violet-600" />
         <div className="text-sm font-medium">
-          <span className="bg-gradient-to-b from-violet-700 to-violet-400 py-0.5 rounded-sm px-2 text-white">Premium</span> Plan
+          <span className="bg-linear-to-b from-violet-700 to-violet-400 py-0.5 rounded-sm px-2 text-white">Premium</span> Plan
         </div>
       </div>
       <div className="text-xs text-neutral-600">Enjoy all premium features and exclusive access.</div>

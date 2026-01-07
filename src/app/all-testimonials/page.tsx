@@ -4,7 +4,7 @@ import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/ui/topbar";
 import axios from "axios";
 import { MessageCircle, List, Grid, Code } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import SpacesSkeletonLoader from "@/components/loaders/loader";
 import { Toaster, toast } from "sonner";
 import { useRouter } from "next/navigation";
@@ -20,7 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { useFetchTestimonials, useTestimonialActions } from "@/hooks/useTestimonials";
-import { GenericTestimonialCard, TestimonialData } from "@/components/TestimonialCardGeneric";
+import { GenericTestimonialCard, MemoGenericTestimonialCard, TestimonialData } from "@/components/TestimonialCardGeneric";
 
 type ViewMode = "list" | "cards";
 
@@ -52,19 +52,29 @@ export default function AllTestimonialsPage() {
   useEffect(() => {
     setTestimonials(hookTestimonials);
     setFavorites(hookFavorites);
+    // Update map of testimonial IDs to authors
+    const map = new Map<string, { author: string; campaignId: string }>();
+    hookTestimonials.forEach(t => {
+      map.set(t.id, { author: t.name, campaignId: t.campaignId });
+    });
+    testimonialMapRef.current = map;
   }, [hookTestimonials, hookFavorites]);
+
+  const testimonialMapRef = useRef<Map<string, { author: string; campaignId: string }>>(new Map());
 
   // Get action handlers
   const { toggleFavorite, archiveTestimonial } = useTestimonialActions();
 
-  const handleToggleFavorite = async (testimonialId: string) => {
-    const testimonial = testimonials.find(t => t.id === testimonialId);
-    if (!testimonial) return;
-    
-    const isFavorite = favorites.has(testimonialId);
-    
-    // Update UI immediately
+  const handleToggleFavorite = useCallback(async (testimonialId: string) => {
     setFavorites(prev => {
+      const isFavorite = prev.has(testimonialId);
+      const testimonial = testimonials.find(t => t.id === testimonialId);
+      if (!testimonial) return prev;
+      
+      // Call API
+      toggleFavorite(testimonialId, isFavorite, testimonial.campaignId);
+      
+      // Update UI optimistically
       const newFavorites = new Set(prev);
       if (isFavorite) {
         newFavorites.delete(testimonialId);
@@ -73,32 +83,19 @@ export default function AllTestimonialsPage() {
       }
       return newFavorites;
     });
+  }, [toggleFavorite, testimonials]);
 
-    // Call API in background
-    const success = await toggleFavorite(testimonialId, isFavorite, testimonial.campaignId);
-    
-    // If API fails, revert the state
-    if (!success) {
-      setFavorites(prev => {
-        const newFavorites = new Set(prev);
-        if (isFavorite) {
-          newFavorites.add(testimonialId);
-        } else {
-          newFavorites.delete(testimonialId);
-        }
-        return newFavorites;
+  const handleArchiveClick = useCallback((testimonialId: string) => {
+    const data = testimonialMapRef.current.get(testimonialId);
+    if (data) {
+      setTestimonialToArchive({
+        id: testimonialId,
+        author: data.author,
+        campaignId: data.campaignId,
       });
+      setArchiveDialogOpen(true);
     }
-  };
-
-  const handleArchiveClick = (testimonial: TestimonialData & { space?: string }) => {
-    setTestimonialToArchive({
-      id: testimonial.id,
-      author: testimonial.name,
-      campaignId: testimonial.campaignId,
-    });
-    setArchiveDialogOpen(true);
-  };
+  }, []);
 
   const handleArchiveConfirm = async () => {
     if (!testimonialToArchive) return;
@@ -179,16 +176,13 @@ export default function AllTestimonialsPage() {
             {viewMode === "list" ? (
               <div className="space-y-4">
                 {testimonials.map((testimonial) => (
-                  <GenericTestimonialCard
+                  <MemoGenericTestimonialCard
                     key={testimonial.id}
                     testimonial={testimonial as TestimonialData & { space?: string }}
                     viewMode="list"
                     isFavorite={favorites.has(testimonial.id)}
                     onToggleFavorite={handleToggleFavorite}
-                    onArchive={(id) => {
-                      const t = testimonials.find((test) => test.id === id);
-                      if (t) handleArchiveClick(t as TestimonialData & { space?: string });
-                    }}
+                    onArchive={handleArchiveClick}
                     showSpace={true}
                   />
                 ))}
@@ -197,15 +191,12 @@ export default function AllTestimonialsPage() {
               <div className="columns-1 gap-6 md:columns-2 lg:columns-3 w-full">
                 {testimonials.map((testimonial) => (
                   <div key={testimonial.id} className="break-inside-avoid mb-6">
-                    <GenericTestimonialCard
+                    <MemoGenericTestimonialCard
                       testimonial={testimonial as TestimonialData & { space?: string }}
                       viewMode="cards"
                       isFavorite={favorites.has(testimonial.id)}
                       onToggleFavorite={handleToggleFavorite}
-                      onArchive={(id) => {
-                        const t = testimonials.find((test) => test.id === id);
-                        if (t) handleArchiveClick(t as TestimonialData & { space?: string });
-                      }}
+                      onArchive={handleArchiveClick}
                       showSpace={true}
                     />
                   </div>

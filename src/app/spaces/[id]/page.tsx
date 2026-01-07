@@ -4,16 +4,17 @@ import Sidebar from "@/components/Sidebar";
 import Topbar from "@/components/ui/topbar";
 import Header from "./components/Header";
 import Controls from "./components/Controls";
-import { GenericTestimonialCard } from "@/components/TestimonialCardGeneric";
+import { GenericTestimonialCard, MemoGenericTestimonialCard } from "@/components/TestimonialCardGeneric";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useMemo, useRef } from "react";
 import { Toaster, toast } from "sonner";
 import axios from "axios";
 import SpaceDetailSkeleton from "@/components/loaders/testimonialLoader";
 import { EmbedModal } from "@/components/ui/embedModal";
 import { useUser } from "@/context/UserContext";
 import { rateLimitHandlers } from "@/lib/rateLimitHandler";
+import { ImportModal } from "@/components/ui/importModal";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -35,11 +36,13 @@ export default function SpaceDetailPage() {
   const [spaceData, setSpaceData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [embedModalOpen, setEmbedModalOpen] = useState(false);
+  const [importModalOpen, setImportModalOpen] = useState(false);
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [testimonialToArchive, setTestimonialToArchive] = useState<{ id: string; author: string } | null>(null);
   const { data: userData, loading: authLoading } = useUser();
 
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
+  const testimonialMapRef = useRef<Map<string, string>>(new Map());
 
   useEffect(() => {
     if (!authLoading && !userData?.user) {
@@ -62,10 +65,18 @@ export default function SpaceDetailPage() {
         });
 
         setSpaceData(res.data);
-        setTestimonials(res.data?.testimonials || []);
+        const testi = res.data?.testimonials || [];
+        setTestimonials(testi);
+        
+        // Update the map of testimonial IDs to authors
+        const map = new Map<string, string>();
+        testi.forEach((t: any) => {
+          map.set(t.id, t.author || t.name || "Unknown");
+        });
+        testimonialMapRef.current = map;
         
         const favIds = new Set<string>(
-          (res.data?.testimonials || [])
+          testi
             .filter((t: any) => t.favourite === true)
             .map((t: any) => t.id)
         );
@@ -82,40 +93,45 @@ export default function SpaceDetailPage() {
 
   const handleToggleFavorite = useCallback(async (testimonialId: string) => {
     const token = localStorage.getItem("token");
-    const testimonial = testimonials.find((t: any) => t.id === testimonialId);
-    const isFavorite = favorites.has(testimonialId);
-
-    if (!testimonial) return;
-
-    try {
+    
+    // Check current state to determine action
+    setFavorites(prev => {
+      const isFavorite = prev.has(testimonialId);
       const endpoint = isFavorite ? "/testimonials/remove-favorite" : "/testimonials/favourite";
-      await axios.put(`${backendUrl}${endpoint}`, { testimonialId, campaignId: id }, {
+      
+      // Make API call
+      axios.put(`${backendUrl}${endpoint}`, { testimonialId, campaignId: id }, {
         headers: { Authorization: `Bearer ${token}` }
+      }).catch(error => {
+        rateLimitHandlers.protected.handleError(error, "Failed to update favorite");
+        // Revert optimistic update on error
+        setFavorites(prev2 => {
+          const newFavorites = new Set(prev2);
+          if (isFavorite) {
+            newFavorites.add(testimonialId);
+          } else {
+            newFavorites.delete(testimonialId);
+          }
+          return newFavorites;
+        });
       });
+      
+      // Update UI optimistically
+      const newFavorites = new Set(prev);
+      if (isFavorite) {
+        newFavorites.delete(testimonialId);
+      } else {
+        newFavorites.add(testimonialId);
+      }
+      return newFavorites;
+    });
+  }, [backendUrl, id]);
 
-      setFavorites(prev => {
-        const newFavorites = new Set(prev);
-        if (isFavorite) {
-          newFavorites.delete(testimonialId);
-          toast.info("Removed from favorites");
-        } else {
-          newFavorites.add(testimonialId);
-          toast.success("Added to favorites");
-        }
-        return newFavorites;
-      });
-    } catch (error: any) {
-      rateLimitHandlers.protected.handleError(error, "Failed to update favorite");
-    }
-  }, [favorites, backendUrl, id, testimonials]);
-
-  const handleArchiveClick = (testimonialId: string) => {
-    const testimonial = testimonials.find((t: any) => t.id === testimonialId);
-    if (testimonial) {
-      setTestimonialToArchive({ id: testimonialId, author: testimonial.author });
-      setArchiveDialogOpen(true);
-    }
-  };
+  const handleArchiveClick = useCallback((testimonialId: string) => {
+    const author = testimonialMapRef.current.get(testimonialId) || "Unknown";
+    setTestimonialToArchive({ id: testimonialId, author });
+    setArchiveDialogOpen(true);
+  }, []);
 
   const handleArchiveConfirm = async () => {
     if (!testimonialToArchive) return;
@@ -166,6 +182,7 @@ export default function SpaceDetailPage() {
               shareLink={spaceData?.shareLink}
               onCopy={handleCopyUrl}
               onOpenEmbed={() => setEmbedModalOpen(true)}
+              onOpenImport={() => setImportModalOpen(true)}
             />
 
             {/* Testimonials Section */}
@@ -176,13 +193,13 @@ export default function SpaceDetailPage() {
                 viewMode === "list" ? (
                   <div className="space-y-4">
                     {testimonials.map((testimonial: any) => (
-                      <GenericTestimonialCard
+                      <MemoGenericTestimonialCard
                         key={testimonial.id}
                         testimonial={testimonial}
                         viewMode="list"
                         isFavorite={favorites.has(testimonial.id)}
-                        onToggleFavorite={() => handleToggleFavorite(testimonial.id)}
-                        onArchive={() => handleArchiveClick(testimonial.id)}
+                        onToggleFavorite={handleToggleFavorite}
+                        onArchive={handleArchiveClick}
                       />
                     ))}
                   </div>
@@ -190,12 +207,12 @@ export default function SpaceDetailPage() {
                   <div className="columns-1 gap-6 md:columns-2 lg:columns-3 w-full">
                     {testimonials.map((testimonial: any) => (
                       <div key={testimonial.id} className="break-inside-avoid mb-6">
-                        <GenericTestimonialCard
+                        <MemoGenericTestimonialCard
                           testimonial={testimonial}
                           viewMode="cards"
                           isFavorite={favorites.has(testimonial.id)}
-                          onToggleFavorite={() => handleToggleFavorite(testimonial.id)}
-                          onArchive={() => handleArchiveClick(testimonial.id)}
+                          onToggleFavorite={handleToggleFavorite}
+                          onArchive={handleArchiveClick}
                         />
                       </div>
                     ))}
@@ -230,11 +247,21 @@ export default function SpaceDetailPage() {
         </AlertDialog>
 
         {/* Embed Modal */}
+        
         <EmbedModal
           open={embedModalOpen}
           onOpenChange={setEmbedModalOpen}
           campaignId={id}
         />
+
+        {/* Import Modal */}
+        <ImportModal
+          open={importModalOpen}
+          onOpenChange={setImportModalOpen}
+          campaignId={id}
+        />
+        
+      
       </Topbar>
     </div>
   );

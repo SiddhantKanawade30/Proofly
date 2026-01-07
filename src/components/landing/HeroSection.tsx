@@ -65,7 +65,7 @@ export default function HeroSection() {
             <div className="relative rounded-2xl border border-slate-200 bg-white p-2 shadow-2xl shadow-slate-200/50">
               <div className="absolute -top-12 -right-12 -z-10 h-64 w-64 rounded-full bg-primary/5 blur-3xl"></div>
               <div className="absolute -bottom-12 -left-12 -z-10 h-64 w-64 rounded-full bg-purple-500/5 blur-3xl"></div>
-              <div className="overflow-hidden rounded-xl bg-slate-50 aspect-[4/3] relative group">
+              <div className="overflow-hidden rounded-xl bg-slate-50 aspect-4/3 relative group">
                 <div
                   className="absolute inset-0 bg-cover bg-center"
                   data-alt="SaaS dashboard interface mockup showing testimonial cards and video players"

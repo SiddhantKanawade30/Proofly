@@ -85,7 +85,7 @@ export const CardView: React.FC<CardViewProps> = ({ testimonials, isLoading }) =
 
           {/* Message Content */}
           <div className="mb-4">
-            {testimonial.testimonialType === "video" && testimonial.playbackId ? (
+            {testimonial.testimonialType === "VIDEO" && testimonial.playbackId ? (
               <div className="rounded-md bg-neutral-100 p-4 text-center">
                 <p className="text-sm text-neutral-600 mb-2">Video Testimonial</p>
                 {/* Video embedding would go here - using Mux playback ID */}
@@ -102,7 +102,7 @@ export const CardView: React.FC<CardViewProps> = ({ testimonials, isLoading }) =
               </div>
             ) : (
               <p className="text-sm leading-relaxed text-neutral-700">
-                {testimonial.message}
+                {testimonial.content}
               </p>
             )}
           </div>
@@ -119,13 +119,13 @@ export const CardView: React.FC<CardViewProps> = ({ testimonials, isLoading }) =
                   py-1
                   rounded
                   ${
-                    testimonial.testimonialType === "video"
+                    testimonial.testimonialType === "VIDEO"
                       ? "bg-purple-100 text-purple-700"
                       : "bg-blue-100 text-blue-700"
                   }
                 `}
               >
-                {testimonial.testimonialType === "video" ? "📹 Video" : "📝 Text"}
+                {testimonial.testimonialType === "VIDEO" ? "📹 Video" : "📝 Text"}
               </span>
             </div>
           )}

@@ -3,15 +3,16 @@
 import React from "react";
 import { Archive, Heart } from "lucide-react";
 import { StarDisplay } from "@/components/ui/starDisplay";
+import TwitterEmbed from "@/components/ui/TwitterEmbed";
 
 export interface TestimonialData {
   id: string;
   name: string;
   email?: string;
   position?: string;
-  message?: string;
+  content?: string;
   rating?: number;
-  testimonialType?: "text" | "video";
+  testimonialType?: "TEXT" | "VIDEO" | "TWITTER" | "INSTAGRAM";
   playbackId?: string;
   createdAt: string;
   favourite: boolean;
@@ -61,8 +62,8 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
 
   const TextContent = () => (
     <>
-      <p className={`text-text-secondary ${viewMode === "list" ? "mb-3 break-words whitespace-pre-wrap" : "mb-4 md:mb-6 text-base leading-relaxed flex-1 break-words whitespace-pre-wrap"}`}>
-        {testimonial.message}
+      <p className={`text-text-secondary ${viewMode === "list" ? "mb-3 wrap-break-word whitespace-pre-wrap" : "mb-4 md:mb-6 text-base leading-relaxed flex-1 wrap-break-word whitespace-pre-wrap"}>`}>
+        {testimonial.content}
       </p>
       {testimonial.rating && testimonial.rating > 0 && (
         <div className={viewMode === "list" ? "mb-3" : "mb-4 md:mb-6"}>
@@ -71,6 +72,15 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
       )}
     </>
   );
+
+  // Special rendering for Twitter testimonials - just the embed
+  if (testimonial.testimonialType === "TWITTER") {
+    return (
+      <div className="mb-6">
+        {testimonial.content && <TwitterEmbed url={testimonial.content} />}
+      </div>
+    );
+  }
 
   if (viewMode === "list") {
     return (
@@ -91,7 +101,7 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
                 </span>
               )}
               {isArchived && (
-                <span className="text-xs px-2 py-1 bg-zinc-200 text-zinc-600 rounded flex items-center gap-1 flex-shrink-0">
+                <span className="text-xs px-2 py-1 bg-zinc-200 text-zinc-600 rounded flex items-center gap-1 shrink-0">
                   <Archive className="size-3" />
                   Archived
                 </span>
@@ -99,7 +109,7 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
             </div>
 
             {/* Content */}
-            {testimonial.testimonialType === "video" && testimonial.playbackId ? (
+            {testimonial.testimonialType === "VIDEO" && testimonial.playbackId ? (
               <VideoContent />
             ) : (
               <TextContent />
@@ -112,7 +122,7 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
           </div>
 
           {/* Actions */}
-          <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+          <div className="flex items-center gap-2 ml-4 shrink-0">
             <button
               onClick={() => onToggleFavorite(testimonial.id)}
               className="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
@@ -149,13 +159,13 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
             </span>
           )}
           {isArchived && (
-            <span className="text-xs px-2 py-1 bg-zinc-200 text-zinc-600 rounded flex items-center gap-1 flex-shrink-0">
+            <span className="text-xs px-2 py-1 bg-zinc-200 text-zinc-600 rounded flex items-center gap-1 shrink-0">
               <Archive className="size-3" />
               Archived
             </span>
           )}
         </div>
-        <div className="flex items-center gap-2 flex-shrink-0">
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={() => onToggleFavorite(testimonial.id)}
             className="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
@@ -178,17 +188,17 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
       </div>
 
       {/* Content */}
-      {testimonial.testimonialType === "video" && testimonial.playbackId ? (
+      {testimonial.testimonialType === "VIDEO" && testimonial.playbackId ? (
         <VideoContent />
       ) : (
         <TextContent />
       )}
 
       {/* Border */}
-      <div className="border-t border-zinc-200 mb-4 flex-shrink-0"></div>
+      <div className="border-t border-zinc-200 mb-4 shrink-0"></div>
 
       {/* Footer */}
-      <div className="mt-auto flex-shrink-0 min-w-0">
+      <div className="mt-auto shrink-0 min-w-0">
         <h3 className="font-semibold text-text-primary mb-1 truncate">
           {testimonial.name}
         </h3>
@@ -207,3 +217,24 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
     </div>
   );
 };
+
+export const MemoGenericTestimonialCard = React.memo(
+  GenericTestimonialCard,
+  (prevProps, nextProps) => {
+    // Return true if props are equal (skip re-render)
+    // Return false if props are different (re-render)
+    return (
+      prevProps.testimonial.id === nextProps.testimonial.id &&
+      prevProps.testimonial.favourite === nextProps.testimonial.favourite &&
+      prevProps.testimonial.testimonialType === nextProps.testimonial.testimonialType &&
+      prevProps.testimonial.playbackId === nextProps.testimonial.playbackId &&
+      prevProps.isFavorite === nextProps.isFavorite &&
+      prevProps.viewMode === nextProps.viewMode &&
+      prevProps.isArchived === nextProps.isArchived &&
+      prevProps.showSpace === nextProps.showSpace &&
+      prevProps.onToggleFavorite === nextProps.onToggleFavorite &&
+      prevProps.onArchive === nextProps.onArchive &&
+      prevProps.onUnarchive === nextProps.onUnarchive
+    );
+  }
+);

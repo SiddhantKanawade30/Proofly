@@ -41,7 +41,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
     name: "",
     email: "",
     position: "",
-    message: "",
+    content: "",
     rating: 0
   });
 
@@ -74,13 +74,13 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
     }
 
     // Validate video recording if video type is selected
-    if (testimonialType === "video" && !videoRecorded) {
+    if (testimonialType === "VIDEO" && !videoRecorded) {
       toast.error("Please record a video before submitting.");
       return;
     }
 
     // Validate text message if text type is selected
-    if (testimonialType === "text" && !formData.message.trim()) {
+    if (testimonialType === "TEXT" && !formData.content.trim()) {
       toast.error("Please enter your feedback message.");
       return;
     }
@@ -90,7 +90,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
     try {
       const rating = Number(formData.rating);
       
-      if (testimonialType === "video") {
+      if (testimonialType === "VIDEO") {
         // Handle video submission
         const blob = new Blob(chunksRef.current.length > 0 ? chunksRef.current : chunks, { type: "video/webm" });
         const file = new File([blob], "user-video.webm");
@@ -98,8 +98,9 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
         setUploading(true);
 
         // Step 1: Get upload URL
-        const { data } = await axios.post(`${BACKEND_URL}/testimonials/create-video-upload`);
-        const uploadUrl = data.data.url;
+        const uploadResponse = await axios.post(`${BACKEND_URL}/testimonials/create-video-upload`);
+        const uploadId = uploadResponse.data.id;
+        const uploadUrl = uploadResponse.data.url;
 
         // Step 2: Upload video to Mux
         await axios.put(uploadUrl, file, {
@@ -108,15 +109,23 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
             console.log(`Upload progress: ${(p.loaded / (p.total || 1) * 100).toFixed(2)}%`),
         });
 
-        // Step 3: Create testimonial with video metadata
+        // Step 3: Wait a moment for Mux to process the upload
+        await new Promise(resolve => setTimeout(resolve, 2000));
+
+        // Step 4: Get the playback ID from the upload
+        const assetResponse = await axios.get(`${BACKEND_URL}/testimonials/get-asset-from-upload/${uploadId}`);
+        const playbackId = assetResponse.data.playbackId;
+
+        // Step 5: Create testimonial with video metadata
         await axios.post(`${BACKEND_URL}/testimonials/create`, {
           name: formData.name,
           email: formData.email,
           position: formData.position,
-          message: formData.message || "Video testimonial",
+          content: formData.content || "Video testimonial",
           rating: rating,
           campaignId: campaign.id,
-          videoUrl: uploadUrl,
+          testimonialType: "VIDEO",
+          playbackId: playbackId,
           tags: tags
         });
 
@@ -127,14 +136,15 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
           name: formData.name,
           email: formData.email,
           position: formData.position,
-          message: formData.message,
+          content: formData.content,
           rating: rating,
-          campaignId: campaign.id
+          campaignId: campaign.id,
+          testimonialType: "TEXT"
         });
       }
 
       setSubmitted(true);
-      setFormData({ name: "", email: "", position: "", message: "", rating: 0 });
+      setFormData({ name: "", email: "", position: "", content: "", rating: 0 });
       resetVideo();
       toast.success("Testimonial submitted successfully!");
     } catch (error: any) {
@@ -229,7 +239,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
 
   // Start camera preview when video mode is selected
   useEffect(() => {
-    if (testimonialType === "video" && !videoRecorded && !recording && !recorder) {
+    if (testimonialType === "VIDEO" && !videoRecorded && !recording && !recorder) {
       navigator.mediaDevices.getUserMedia({ video: true, audio: true })
         .then(stream => {
           if (videoRef.current) {
@@ -367,7 +377,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
                   resetVideo();
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  testimonialType === "text"
+                  testimonialType === "TEXT"
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-600 hover:text-gray-900"
                 }`}
@@ -379,10 +389,9 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
                 type="button"
                 onClick={() => {
                   setTestimonialType("video");
-                  setFormData({ ...formData, message: "" });
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
-                  testimonialType === "video"
+                  testimonialType === "VIDEO"
                     ? "bg-white text-gray-900 shadow-sm"
                     : "text-gray-600 hover:text-gray-900"
                 }`}
@@ -396,7 +405,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
           <div className="px-6 flex-1 flex flex-col min-h-0 overflow-hidden">
             <form onSubmit={handleSubmit} className="flex flex-col flex-1 min-h-0 space-y-3">
               {/* Video Recording Section - Show first when video mode is selected */}
-              {testimonialType === "video" && !videoRecorded && (
+              {testimonialType === "VIDEO" && !videoRecorded && (
                 <div className="flex-1 flex flex-col pt-3 min-h-0 space-y-3 overflow-hidden">
                   <label className="flex items-center gap-1.5 text-sm font-medium flex-shrink-0">
                     <Video className="h-4 w-4 text-muted-foreground" />
@@ -446,7 +455,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
               )}
 
               {/* Form Fields - Show for text mode OR after video is recorded */}
-              {(testimonialType === "text" || (testimonialType === "video" && videoRecorded)) && (
+              {(testimonialType === \"TEXT\" || (testimonialType === \"VIDEO\" && videoRecorded)) && (
                 <>
                   <div className="grid grid-cols-2 gap-3 flex-shrink-0">
                     {/* Name */}
@@ -514,7 +523,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
                   </div>
 
                   {/* Message - Only show for text testimonial */}
-                  {testimonialType === "text" && (
+                  {testimonialType === "TEXT" && (
                     <div className="flex-1 flex flex-col pt-3 min-h-0 space-y-1.5 overflow-hidden">
                       <label htmlFor="message" className="flex items-center gap-1.5 text-sm font-medium flex-shrink-0">
                         <MessageSquare className="h-4 w-4 text-muted-foreground" />
@@ -522,10 +531,10 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
                       </label>
                       <div className="relative flex-1 min-h-0">
                         <textarea
-                          id="message"
-                          name="message"
+                          id="content"
+                          name="content"
                           required
-                          value={formData.message}
+                          value={formData.content}
                           onChange={handleChange}
                           className="w-full h-full max-h-[100px] rounded-md border border-input bg-transparent px-10 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 resize-none"
                           placeholder="Share your experience, feedback, or testimonial..."
@@ -536,7 +545,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
                   )}
 
                   {/* Video Preview and Tags - Show after video is recorded */}
-                  {testimonialType === "video" && videoRecorded && (
+                  {testimonialType === "VIDEO" && videoRecorded && (
                     <div className="flex-1 flex flex-col space-y-4 pt-3">
                       {/* Video Preview */}
                       <div className="w-full max-w-md mx-auto aspect-video bg-black rounded-lg overflow-hidden">

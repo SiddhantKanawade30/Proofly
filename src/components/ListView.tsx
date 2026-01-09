@@ -6,7 +6,7 @@ interface Testimonial {
   position?: string;
   message: string;
   rating?: number;
-  testimonialType?: "text" | "video";
+  testimonialType?: "TEXT" | "VIDEO";
   playbackId?: string;
 }
 
@@ -76,7 +76,7 @@ export const ListView: React.FC<ListViewProps> = ({ testimonials, isLoading }) =
                   py-1
                   rounded
                   ${
-                    testimonial.testimonialType === "VIDEO"
+                      testimonial.testimonialType === "VIDEO"
                       ? "bg-purple-100 text-purple-700"
                       : "bg-blue-100 text-blue-700"
                   }
@@ -124,7 +124,7 @@ export const ListView: React.FC<ListViewProps> = ({ testimonials, isLoading }) =
               </div>
             ) : (
               <p className="text-sm leading-relaxed text-neutral-700">
-                {testimonial.content}
+                {testimonial.message}
               </p>
             )}
           </div>

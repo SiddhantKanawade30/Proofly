@@ -24,7 +24,7 @@ const navItems: NavItem[] = [
   { name: "All Testimonials", href: "/all-testimonials", icon: <MessageCircle className="size-5" /> },
   { name: "Archived", href: "/archived", icon: <Archive className="size-5" /> },
   { name: "Favourites", href: "/favourites", icon: <Heart className="size-5" /> },
-  { name: "Settings", href: "/settings", icon: <Settings /> }
+  // { name: "Settings", href: "/settings", icon: <Settings /> }
 ];
 
 export default function Sidebar({ user }: SidebarProps) {

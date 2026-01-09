@@ -6,9 +6,9 @@ type Props = {
 };
 
 export default function TwitterEmbed({ url }: Props) {
-  const [embedHtml, setEmbedHtml] = useState<string>("");
+  const [embedHtml, setEmbedHtml] = useState("");
   const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string>("");
+  const [error, setError] = useState("");
 
   useEffect(() => {
     const fetchEmbed = async () => {
@@ -16,7 +16,6 @@ export default function TwitterEmbed({ url }: Props) {
       setError("");
       
       try {
-        // Use Twitter's oEmbed API
         const response = await fetch(
           `https://publish.twitter.com/oembed?url=${encodeURIComponent(url)}&dnt=true`
         );
@@ -41,42 +40,40 @@ export default function TwitterEmbed({ url }: Props) {
   }, [url]);
 
   useEffect(() => {
-    // Load Twitter widgets after HTML is set
-    if (embedHtml) {
-      // @ts-ignore
+    // Wait for both embedHtml and Twitter widgets to be ready
+    if (!embedHtml) return;
+
+    const loadWidget = () => {
       if (window.twttr?.widgets) {
-        // @ts-ignore
         window.twttr.widgets.load();
       } else {
-        // If widgets not loaded yet, load the script
-        const script = document.createElement("script");
-        script.src = "https://platform.twitter.com/widgets.js";
-        script.async = true;
-        script.charset = "utf-8";
-        document.body.appendChild(script);
+        // If script hasn't loaded yet, wait a bit and try again
+        setTimeout(loadWidget, 100);
       }
-    }
+    };
+
+    loadWidget();
   }, [embedHtml]);
 
   if (isLoading) {
     return (
-      <div className="flex justify-center w-full py-8">
-        <div className="text-gray-400">Loading tweet...</div>
+      <div className="flex items-center justify-center p-4">
+        <div className="text-gray-500">Loading tweet...</div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="flex justify-center w-full py-8">
-        <div className="text-red-400">{error}</div>
+      <div className="rounded border border-red-300 bg-red-50 p-4 text-red-700">
+        {error}
       </div>
     );
   }
 
   return (
-    <div 
-      className="flex justify-center w-full"
+    <div
+      className="twitter-embed-container"
       dangerouslySetInnerHTML={{ __html: embedHtml }}
     />
   );

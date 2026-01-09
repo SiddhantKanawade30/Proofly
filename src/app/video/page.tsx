@@ -23,7 +23,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [testimonialType, setTestimonialType] = useState<"text" | "video">("text");
+  const [testimonialType, setTestimonialType] = useState<"TEXT" | "VIDEO">("TEXT");
   
   // Video recording states
   const videoRef = useRef<HTMLVideoElement>(null);
@@ -253,7 +253,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
 
     // Cleanup when switching away from video mode
     return () => {
-      if (testimonialType !== "video" && videoRef.current?.srcObject) {
+      if (testimonialType !== "VIDEO" && videoRef.current?.srcObject) {
         const stream = videoRef.current.srcObject as MediaStream;
         stream.getTracks().forEach(track => track.stop());
         if (videoRef.current) {
@@ -373,7 +373,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
               <button
                 type="button"
                 onClick={() => {
-                  setTestimonialType("text");
+                  setTestimonialType("TEXT");
                   resetVideo();
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
@@ -388,7 +388,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
               <button
                 type="button"
                 onClick={() => {
-                  setTestimonialType("video");
+                  setTestimonialType("VIDEO");
                 }}
                 className={`flex items-center gap-2 px-4 py-2 rounded-md text-sm font-medium transition-all ${
                   testimonialType === "VIDEO"
@@ -455,7 +455,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
               )}
 
               {/* Form Fields - Show for text mode OR after video is recorded */}
-              {(testimonialType === \"TEXT\" || (testimonialType === \"VIDEO\" && videoRecorded)) && (
+              {(testimonialType === "TEXT" || (testimonialType === "VIDEO" && videoRecorded)) && (
                 <>
                   <div className="grid grid-cols-2 gap-3 flex-shrink-0">
                     {/* Name */}
@@ -619,11 +619,11 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
               )}
 
               {/* Submit Button - Only show for text mode OR after video is recorded */}
-              {(testimonialType === "text" || (testimonialType === "video" && videoRecorded)) && (
+              {(testimonialType === "TEXT" || (testimonialType === "VIDEO" && videoRecorded)) && (
                 <div className="flex-shrink-0 pt-1">
                   <button
                     type="submit"
-                    disabled={submitting || uploading || (testimonialType === "video" && recording)}
+                    disabled={submitting || uploading || (testimonialType === "VIDEO" && recording)}
                     className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90"
                   >
                     {submitting || uploading ? (
@@ -633,7 +633,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
                       </>
                     ) : (
                       <>
-                        {testimonialType === "video" ? (
+                        {testimonialType === "VIDEO" ? (
                           <>
                             <Video className="h-4 w-4" />
                             <span>Submit Video Testimonial</span>

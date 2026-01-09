@@ -14,8 +14,6 @@ import { DeleteSpaceDialog } from "@/components/spaces/DeleteSpaceDialog";
 import { useUser } from "@/context/UserContext";
 import { rateLimitHandlers } from "@/lib/rateLimitHandler";
 
-
-
 interface Space {
   id: string;
   title: string;
@@ -82,12 +80,10 @@ export default function SpacesPage() {
   };
 
   const handleSpaceCreated = (newSpace: any) => {
- 
     if (!newSpace || !newSpace.id) {
       return;
     }
 
-    // Ensure the new space has the correct structure
     const spaceToAdd: Space = {
       id: newSpace.id,
       title: newSpace.title,
@@ -99,9 +95,7 @@ export default function SpacesPage() {
     
     console.log("Adding space to list:", spaceToAdd);
     
-    // Add the new space to the beginning of the array
     setSpaces((prevSpaces) => {
-      // Check if space already exists to avoid duplicates
       const exists = prevSpaces.some(space => space.id === spaceToAdd.id);
       if (exists) {
         console.warn("Space already exists in list, skipping add");
@@ -111,7 +105,7 @@ export default function SpacesPage() {
     });
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     const fetchSpaces = async () => {
       const token = localStorage.getItem("token");
       if (!token) {
@@ -127,8 +121,8 @@ export default function SpacesPage() {
 
       try {
         const res = await axios.get(`${backendUrl}/campaigns/get`, {
-          headers : {
-            "Authorization" : `Bearer ${localStorage.getItem("token")}`
+          headers: {
+            "Authorization": `Bearer ${localStorage.getItem("token")}`
           }
         });
         setSpaces(res.data);
@@ -144,28 +138,32 @@ export default function SpacesPage() {
   }, []);
 
   return (
-    <div className="flex min-h-screen bg-zinc-50 font-sans">
+    <div className="flex min-h-screen bg-neutral-100 font-sans">
       <Toaster position="bottom-right" />
       <Sidebar />
       <Topbar>
+        {/* Header - always visible */}
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h1 className="text-2xl font-bold text-text-primary">All Spaces</h1>
+            <p className="text-text-secondary mt-1">
+              {loading ? "Loading..." : `${spaces?.length} spaces created`}
+            </p>
+          </div>
+          <button 
+            onClick={() => setIsDialogOpen(true)}
+            className="flex items-center gap-2 px-4 py-2 bg-text-primary text-white rounded-lg hover:bg-zinc-800 transition-colors"
+          >
+            <Plus className="size-4" />
+            Create New Space
+          </button>
+        </div>
+
+        {/* Content area - shows loader or actual content */}
         {loading ? (
           <SpacesSkeletonLoader />
         ) : (
           <>
-            <div className="flex items-center justify-between mb-6">
-              <div>
-                <h1 className="text-2xl font-bold text-text-primary">All Spaces</h1>
-                <p className="text-text-secondary mt-1">{spaces?.length} spaces created</p>
-              </div>
-              <button 
-                onClick={() => setIsDialogOpen(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-text-primary text-white rounded-lg hover:bg-zinc-800 transition-colors"
-              >
-                <Plus className="size-4" />
-                Create New Space
-              </button>
-            </div>
-
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
               {spaces?.map((space) => (
                 <SpaceCard
@@ -214,4 +212,3 @@ export default function SpacesPage() {
     </div>
   );
 }
-

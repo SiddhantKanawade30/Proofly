@@ -68,7 +68,7 @@ export default function TestimonialList({
               ></iframe>
               <div className="mb-6 text-text-secondary text-base leading-relaxed">
                 <p className="break-words whitespace-pre-wrap">
-                  {testimonial.message && `"${testimonial.message}"`}
+                  {testimonial.content && `"${testimonial.content}"`}
                 </p>
                 {/* Rating */}
                 {testimonial.rating && testimonial.rating > 0 && (
@@ -81,7 +81,7 @@ export default function TestimonialList({
           ) : (
             <div className="mb-6 text-text-secondary text-base leading-relaxed">
               <p className="break-words whitespace-pre-wrap">
-                {testimonial.message && `"${testimonial.message}"`}
+                {testimonial.content && `"${testimonial.content}"`}
               </p>
               {/* Rating */}
               {testimonial.rating && testimonial.rating > 0 && (

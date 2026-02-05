@@ -2,15 +2,8 @@ import React from 'react';
 
 const SpacesSkeletonLoader = () => {
   return (
-    <div className="p-8 bg-neutral-50 min-h-screen">
-      {/* Header Section */}
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <div className="h-8 w-48 bg-gray-200 rounded mb-2 animate-pulse"></div>
-          <div className="h-4 w-32 bg-gray-200 rounded animate-pulse"></div>
-        </div>
-        <div className="h-10 w-40 bg-gray-200 rounded animate-pulse"></div>
-      </div>
+    <div className="p-8 bg-neutral-100 min-h-screen">
+      
 
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

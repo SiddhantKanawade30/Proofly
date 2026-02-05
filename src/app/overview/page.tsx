@@ -118,7 +118,7 @@ export default function Home() {
                   <div className="flex items-start gap-2">
                     <div className="flex-1">
                       <p className="text-sm py-2 text-zinc-600 mb-1 leading-relaxed">
-                        {testimonial.message}
+                        {testimonial.content}
                       </p>
                       <div className="flex items-center gap-1.5 mb-1">
                         <h3 className="text-sm font-medium text-zinc-900">

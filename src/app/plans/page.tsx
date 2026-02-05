@@ -1,6 +1,6 @@
 "use client";
 
-import { Check, X } from "lucide-react";
+import { Check, X, ArrowLeft } from "lucide-react";
 import axios from "axios";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
@@ -152,16 +152,14 @@ export default function PlansPage() {
     );
 
     var options = {
-      key: response.data.keyId, // Enter the Key ID generated from the Dashboard
-      amount: response.data.amount, // Amount is in currency subunits.
+      key: response.data.keyId,
+      amount: response.data.amount,
       currency: "INR",
-      name: "Testimonials", //your business name
+      name: "Testimonials",
       description: "Test Transaction",
-      // "image": "https://example.com/your_logo",
-      order_id: response.data.orderId, // This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+      order_id: response.data.orderId,
       handler: async function (response: any) {
         try {
-          // Send payment details to backend for verification
           const verifyResponse = await axios.post(
             `${BACKEND_URL}/payments/verify-payment`,
             {
@@ -178,7 +176,6 @@ export default function PlansPage() {
 
           if (verifyResponse.data.success) {
             alert("Payment successful! Your plan has been upgraded.");
-            // Redirect or refresh the page
             window.location.reload();
           }
         } catch (error) {
@@ -210,11 +207,10 @@ export default function PlansPage() {
       features: [
         "Create up to 2 video testimonials",
         "Create up to 5 text testimonials per campaign",
-        "Unlimited campaigns",
+        "2 campaigns",
         "Basic testimonial embed widget",
-        "Email notifications",
       ],
-      limitations: ["No custom branding", "No advanced analytics"],
+      limitations: ["No custom branding", "No watermark removal"],
       ctaText: "Current Plan",
       ctaDisabled: currentPlan === "FREE",
       onCtaClick: () => {},
@@ -226,11 +222,9 @@ export default function PlansPage() {
       price: "₹499",
       badge: "Most Popular",
       features: [
-        "Unlimited video testimonials",
-        "Unlimited text testimonials",
+        "Up to 100 video testimonials per month",
+        "Up to 500 text testimonials per month",
         "Unlimited campaigns",
-        "Custom branding (logo & colors)",
-        "Advanced analytics dashboard",
         "Priority support",
         "Remove watermark",
       ],
@@ -246,6 +240,16 @@ export default function PlansPage() {
   return (
     <div className="min-h-screen bg-neutral-50 dark:bg-neutral-900 py-12 px-4 sm:px-6 lg:px-8">
       <div className="max-w-6xl mx-auto">
+        <div className="mb-8">
+          <button
+            onClick={() => router.push('/overview')}
+            className="flex items-center gap-2 text-neutral-600 dark:text-neutral-400 hover:text-neutral-900 dark:hover:text-neutral-100 transition-colors"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            <span className="text-sm font-medium">Back to Overview</span>
+          </button>
+        </div>
+
         <div className="text-center mb-12">
           <h1 className="text-3xl sm:text-4xl font-bold text-neutral-900 dark:text-neutral-100 mb-3">
             Simple, Transparent Pricing

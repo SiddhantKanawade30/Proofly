@@ -57,36 +57,6 @@ export function EmbedModal({ open, onOpenChange, campaignId }: EmbedModalProps) 
         </DialogHeader>
 
         <div className="space-y-6 mt-4">
-          {/* Embed URL */}
-          {/* <div className="space-y-2">
-            <label className="text-sm font-semibold text-gray-900">Embed URL</label>
-            <div className="flex items-center gap-2">
-              <input
-                type="text"
-                value={embedUrl}
-                readOnly
-                className="flex-1 px-3 py-2.5 text-sm bg-gray-50 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/20 text-gray-700"
-              />
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleCopyUrl}
-                className="flex items-center gap-2 whitespace-nowrap"
-              >
-                {copiedUrl ? (
-                  <>
-                    <Check className="h-4 w-4 text-green-600" />
-                    <span className="text-green-600">Copied!</span>
-                  </>
-                ) : (
-                  <>
-                    <Copy className="h-4 w-4" />
-                    <span>Copy</span>
-                  </>
-                )}
-              </Button>
-            </div>
-          </div> */}
 
           {/* Iframe Code */}
           <div className="space-y-2">

@@ -14,7 +14,7 @@ export const TextSubmitButton = ({
   onSubmit: () => void;
 }) => {
   return (
-    <div className="flex-shrink-0 pt-1">
+    <div className="shrink-0 pt-1">
       <button
         type="submit"
         disabled={submitting}
@@ -55,7 +55,7 @@ export const TextTestimonial = ({
 }) => {
   return (
     <>
-      <div className="grid grid-cols-2 gap-3 flex-shrink-0">
+      <div className="grid grid-cols-2 gap-3 shrink-0">
         {/* Name */}
         <div className="space-y-1.5">
           <label
@@ -106,7 +106,7 @@ export const TextTestimonial = ({
       </div>
 
       {/* Position */}
-      <div className="space-y-1.5 flex-shrink-0 pt-3">
+      <div className="space-y-1.5 shrink-0 pt-3">
         <label
           htmlFor="position"
           className="flex items-center gap-1.5 text-sm font-medium"
@@ -135,21 +135,21 @@ export const TextTestimonial = ({
         </div>
       </div>
 
-      {/* Message */}
+      {/* Your Feedback / Experience */}
       <div className="flex flex-col pt-3 space-y-1.5">
         <label
-          htmlFor="message"
-          className="flex items-center gap-1.5 text-sm font-medium flex-shrink-0"
+          htmlFor="content"
+          className="flex items-center gap-1.5 text-sm font-medium shrink-0"
         >
           <MessageSquare className="h-4 w-4 text-muted-foreground" />
           Your Feedback / Experience *
         </label>
         <div className="relative">
           <textarea
-            id="message"
-            name="message"
+            id="content"
+            name="content"
             required
-            value={formData.message}
+            value={formData.content}
             onChange={handleChange}
             className="w-full h-[120px] rounded-md border border-input bg-transparent px-10 py-2 text-sm shadow-xs transition-[color,box-shadow] outline-none placeholder:text-muted-foreground focus-visible:outline-none focus-visible:border-ring focus-visible:ring-ring/50 focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50 resize-none"
             placeholder="Share your experience, feedback, or testimonial..."

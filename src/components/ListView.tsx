@@ -6,7 +6,7 @@ interface Testimonial {
   position?: string;
   message: string;
   rating?: number;
-  testimonialType?: "text" | "video";
+  testimonialType?: "TEXT" | "VIDEO";
   playbackId?: string;
 }
 
@@ -76,13 +76,13 @@ export const ListView: React.FC<ListViewProps> = ({ testimonials, isLoading }) =
                   py-1
                   rounded
                   ${
-                    testimonial.testimonialType === "video"
+                      testimonial.testimonialType === "VIDEO"
                       ? "bg-purple-100 text-purple-700"
                       : "bg-blue-100 text-blue-700"
                   }
                 `}
               >
-                {testimonial.testimonialType === "video" ? "📹 Video" : "📝 Text"}
+                {testimonial.testimonialType === "VIDEO" ? "📹 Video" : "📝 Text"}
               </span>
             )}
           </div>
@@ -107,7 +107,7 @@ export const ListView: React.FC<ListViewProps> = ({ testimonials, isLoading }) =
 
           {/* Message Content */}
           <div>
-            {testimonial.testimonialType === "video" && testimonial.playbackId ? (
+            {testimonial.testimonialType === "VIDEO" && testimonial.playbackId ? (
               <div className="rounded-md bg-neutral-100 p-6 text-center">
                 <p className="text-sm text-neutral-600 mb-4">Video Testimonial</p>
                 {/* Video embedding would go here - using Mux playback ID */}

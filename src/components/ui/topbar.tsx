@@ -1,9 +1,9 @@
 "use client";
 
 import { usePathname, useParams } from "next/navigation";
-import { 
-  Search, 
-  Bell,  
+import {
+  Search,
+  Bell,
   Plus,
   LayoutGrid,
   Airplay,
@@ -121,7 +121,7 @@ function UserProfileDropdown() {
 export default function Topbar({ children, campaigns = [] }: { children: React.ReactNode; campaigns?: Campaign[] }) {
   const pathname = usePathname();
   const params = useParams();
-  
+
   // Handle dynamic routes and breadcrumbs
   const getPageTitle = () => {
     // Check if we're on a space detail page
@@ -136,7 +136,7 @@ export default function Topbar({ children, campaigns = [] }: { children: React.R
         </div>
       ) : "Spaces";
     }
-    
+
     // Find exact match or return default
     const currentPage = navItems.find(item => item.href === pathname) || navItems[0];
     return currentPage.name;
@@ -156,33 +156,8 @@ export default function Topbar({ children, campaigns = [] }: { children: React.R
             </div>
           </div>
 
-          {/* Right: Search, Request Testimonials, Notifications & User */}
           <div className="flex items-center gap-3">
-            {/* Search Bar */}
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 size-4 text-zinc-400" />
-              <input
-                type="text"
-                placeholder="Search anything..."
-                className="w-[200px] pl-8  py-2 bg-zinc-50 border border-zinc-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary placeholder:text-sm"
-              />
-              <div className="absolute right-1 top-2 transform -translate-y-1/6">
-                <kbd className="px-2 py-2 text-xs font-semibold text-zinc-500 bg-white border border-zinc-200 rounded-md">
-                  ⌘ K
-                </kbd>
-              </div>
-            </div>
-
-            {/* Request Testimonials */}
             <RequestTestimonialBox campaigns={campaigns} />
-
-            {/* Notifications */}
-            <button className="w-9 h-9 rounded-full hover:bg-zinc-100 flex items-center justify-center transition-colors relative">
-              <Bell className="size-5 text-zinc-600" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full"></span>
-            </button>
-
-            
           </div>
         </div>
       </div>

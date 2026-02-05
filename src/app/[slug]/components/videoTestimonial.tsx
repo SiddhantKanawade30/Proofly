@@ -29,7 +29,7 @@ export const VideoSpace = ({
   return (
     <div>
       {/* Large Video Recording Area */}
-      <div className="space-y-1.5 flex-shrink-0">
+      <div className="space-y-1.5 shrink-0">
         <label className="flex items-center gap-1.5 text-sm font-medium">
           <Video className="h-4 w-4 text-muted-foreground" />
           Record Video Testimonial *
@@ -41,7 +41,7 @@ export const VideoSpace = ({
 
       <div className="py-5">
         {/* Name */}
-        <div className="space-y-1.5 flex-shrink-0 py-3">
+        <div className="space-y-1.5 shrink-0 py-3">
           <label
             htmlFor="name"
             className="flex items-center gap-1.5 text-sm font-medium"
@@ -65,7 +65,7 @@ export const VideoSpace = ({
         </div>
 
         {/* Email */}
-        <div className="space-y-1.5 flex-shrink-0 py-3">
+        <div className="space-y-1.5 shrink-0 py-3">
           <label
             htmlFor="email"
             className="flex items-center gap-1.5 text-sm font-medium"
@@ -89,7 +89,7 @@ export const VideoSpace = ({
         </div>
 
         {/* Position */}
-        <div className="space-y-1.5 flex-shrink-0 py-3">
+        <div className="space-y-1.5 shrink-0 py-3">
           <label
             htmlFor="position"
             className="flex items-center gap-1.5 text-sm font-medium"

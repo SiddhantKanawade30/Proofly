@@ -142,7 +142,6 @@ export default function SpacesPage() {
       <Toaster position="bottom-right" />
       <Sidebar />
       <Topbar>
-        {/* Header - always visible */}
         <div className="flex items-center justify-between mb-6">
           <div>
             <h1 className="text-2xl font-bold text-text-primary">All Spaces</h1>
@@ -159,7 +158,6 @@ export default function SpacesPage() {
           </button>
         </div>
 
-        {/* Content area - shows loader or actual content */}
         {loading ? (
           <SpacesSkeletonLoader />
         ) : (
@@ -175,7 +173,7 @@ export default function SpacesPage() {
             </div>
 
             {spaces?.length === 0 && (
-              <div className="rounded-lg bg-white p-12 shadow-sm border border-zinc-200 text-center">
+              <div className="rounded-lg bg-white p-12 border text-center">
                 <p className="text-text-secondary mb-4">No spaces created yet</p>
                 <button 
                   onClick={() => setIsDialogOpen(true)}

@@ -106,6 +106,7 @@ export function DottedLineChart({ testimonials = [] }: DottedLineChartProps) {
               left: 12,
               right: 12,
             }}
+            height={250}
           >
             <CartesianGrid vertical={false} />
             <XAxis

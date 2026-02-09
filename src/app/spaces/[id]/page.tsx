@@ -24,7 +24,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
-type ViewMode = "list" | "block";
+type ViewMode = "block";
 
 export default function SpaceDetailPage() {
   const params = useParams();
@@ -162,16 +162,7 @@ export default function SpaceDetailPage() {
       <Toaster position="bottom-right" />
       <Sidebar />
       <Topbar>
-        {loading ? (
-          <SpaceDetailSkeleton />
-        ) : !testimonials ? (
-          <div className="text-center py-12">
-            <h1 className="text-2xl font-bold text-text-primary mb-4">Testimonials not found</h1>
-            <Link href="/spaces" className="text-text-primary hover:underline">
-              ← Back to Spaces
-            </Link>
-          </div>
-        ) : (
+        {!authLoading && userData?.user && (
           <>
             <Header
               title={spaceData?.title}
@@ -183,44 +174,42 @@ export default function SpaceDetailPage() {
             />
 
             <div className="mb-6">
-              <Controls viewMode={viewMode} setViewMode={setViewMode} count={testimonials.length} />
-
-              {testimonials.length > 0 ? (
-                viewMode === "list" ? (
-                  <div className="space-y-4">
-                    {testimonials.map((testimonial: any) => (
-                      <MemoGenericTestimonialCard
-                        key={testimonial.id}
-                        testimonial={testimonial}
-                        viewMode="list"
-                        isFavorite={favorites.has(testimonial.id)}
-                        onToggleFavorite={handleToggleFavorite}
-                        onArchive={handleArchiveClick}
-                      />
-                    ))}
-                  </div>
-                ) : (
-                  <div className="columns-1 gap-6 md:columns-2 lg:columns-3 w-full">
-                    {testimonials.map((testimonial: any) => (
-                      <div key={testimonial.id} className="break-inside-avoid mb-6">
-                        <MemoGenericTestimonialCard
-                          testimonial={testimonial}
-                          viewMode="cards"
-                          isFavorite={favorites.has(testimonial.id)}
-                          onToggleFavorite={handleToggleFavorite}
-                          onArchive={handleArchiveClick}
-                        />
-                      </div>
-                    ))}
-                  </div>
-                )
-              ) : (
-                <div className="p-12 text-center rounded-lg bg-white border border-zinc-200">
-                  <p className="text-text-secondary mb-2">No testimonials yet</p>
-                  <p className="text-sm text-text-secondary">
-                    Share this space URL to start collecting testimonials
-                  </p>
+              {loading ? (
+                <SpaceDetailSkeleton />
+              ) : !testimonials ? (
+                <div className="text-center py-12">
+                  <h1 className="text-2xl font-bold text-text-primary mb-4">Testimonials not found</h1>
+                  <Link href="/spaces" className="text-text-primary hover:underline">
+                    ← Back to Spaces
+                  </Link>
                 </div>
+              ) : (
+                <>
+                  <Controls count={testimonials.length} />
+
+                  {testimonials.length > 0 ? (
+                    <div className="columns-1 gap-6 md:columns-2 lg:columns-3 w-full">
+                      {testimonials.map((testimonial: any) => (
+                        <div key={testimonial.id} className="break-inside-avoid mb-6">
+                          <MemoGenericTestimonialCard
+                            testimonial={testimonial}
+                            viewMode="cards"
+                            isFavorite={favorites.has(testimonial.id)}
+                            onToggleFavorite={handleToggleFavorite}
+                            onArchive={handleArchiveClick}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="p-12 text-center rounded-lg bg-white border border-zinc-200">
+                      <p className="text-text-secondary mb-2">No testimonials in this space</p>
+                      <p className="text-sm text-text-secondary">
+                        Tip: Archive testimonials you don't want to embed
+                      </p>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </>

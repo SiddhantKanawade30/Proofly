@@ -23,12 +23,11 @@ const navItems: NavItem[] = [
   { name: "Spaces", href: "/spaces", icon: <Airplay className="size-5" /> },
   { name: "All Testimonials", href: "/all-testimonials", icon: <MessageCircle className="size-5" /> },
   { name: "Archived", href: "/archived", icon: <Archive className="size-5" /> },
-  { name: "Favourites", href: "/favourites", icon: <Heart className="size-5" /> },
-  { name: "Wall of Love", href: "/wall-of-love", icon: <BrickWall className="size-5" /> }
+  { name: "Favourites", href: "/favourites", icon: <Heart className="size-5" /> }
 ];
 
 export default function Sidebar({ user }: SidebarProps) {
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
   const pathname = usePathname();
   const { data } = useUser();
 
@@ -66,19 +65,33 @@ export default function Sidebar({ user }: SidebarProps) {
       >
         <div className="flex h-full flex-col">
           {/* Logo/Brand */}
-          <div className="flex items-center justify-between pt-5 ">
-            <h1 className=" flex items-center gap-1 text-xl font-bold text-text-primary" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-            <MessageCircle className="size-5" />  Testimonials
+          <div className="flex items-center justify-between pt-5">
+            <h1 className="flex items-center gap-1 text-xl font-bold text-text-primary" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              <MessageCircle className="size-5" /> Testimonials
             </h1>
             
+            {/* Close button for mobile */}
+            <button
+              onClick={() => setIsOpen(false)}
+              className="lg:hidden p-1 rounded-md hover:bg-zinc-100 transition-colors"
+            >
+              <svg
+                className="h-5 w-5 text-zinc-600"
+                fill="none"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth="2"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path d="M18 6L6 18M6 6l12 12" />
+              </svg>
+            </button>
           </div>
 
-          <div className="py-4 border-b  px-1  border-zinc-200">
+          <div className="py-4 border-b px-1 border-zinc-200">
             <ComboboxDemo userName={userData?.name} userEmail={userData?.email} />
           </div>
-
-        
-          
 
           {/* Navigation */}
           <nav className="flex-1 overflow-y-auto py-3">
@@ -89,6 +102,7 @@ export default function Sidebar({ user }: SidebarProps) {
                   <li key={item.name}>
                     <Link
                       href={item.href}
+                      onClick={() => setIsOpen(false)} // Close sidebar on mobile when clicking nav item
                       className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                         active
                           ? "bg-zinc-100 text-text-primary"
@@ -106,51 +120,51 @@ export default function Sidebar({ user }: SidebarProps) {
 
           {/* Footer */}
           {userData?.plan === "FREE" ? (
-  <div className="border items-center justify-center mb-2 p-4 bg-neutral-100 rounded-lg">
-    <div className="flex items-center gap-1 mb-2">
-      <Gift className="size-5 text-primary" />
-      <div className="text-sm font-medium">Upgrade to <span className="bg-linear-to-b from-violet-700 to-violet-400 py-0.5 rounded-sm px-2 text-white">Premium</span></div>
-    </div>
-    <div className="text-xs text-text-secondary">Upgrade to premium to get access to more features.</div>
-    <Link href="/plans"><button className="cursor-pointer bg-primary text-white w-full px-4 py-2 rounded-md mt-4">Click here</button></Link>
-  </div>
-) : (
-  <div className="relative mb-2 p-[1.2px] bg-white rounded-lg overflow-hidden">
-    <div className="absolute inset-0 animate-spin scale-[3] bg-[conic-gradient(at_center,transparent,var(--color-violet-600)_20%,transparent_30%)] animation-duration-[4s]" ></div>
-    
-    <div className="relative items-center justify-center p-4 border-neutral-200 border bg-neutral-100 rounded-lg">
-      <div className="flex items-center gap-1 mb-2">
-        <Gift className="size-5 text-violet-600" />
-        <div className="text-sm font-medium">
-          <span className="bg-linear-to-b from-violet-700 to-violet-400 py-0.5 rounded-sm px-2 text-white">Premium</span> Plan
-        </div>
-      </div>
-      <div className="text-xs text-neutral-600">Enjoy all premium features and exclusive access.</div>
-    </div>
-  </div>
-)}
-
-
+            <div className="border items-center justify-center mb-2 p-4 bg-neutral-100 rounded-lg">
+              <div className="flex items-center gap-1 mb-2">
+                <Gift className="size-5 text-primary" />
+                <div className="text-sm font-medium">Upgrade to <span className="bg-linear-to-b from-violet-700 to-violet-400 py-0.5 rounded-sm px-2 text-white">Premium</span></div>
+              </div>
+              <div className="text-xs text-text-secondary">Upgrade to premium to get access to more features.</div>
+              <Link href="/plans"><button className="cursor-pointer bg-primary text-white w-full px-4 py-2 rounded-md mt-4">Click here</button></Link>
+            </div>
+          ) : (
+            <div className="relative mb-2 p-[1.2px] bg-white rounded-lg overflow-hidden">
+              <div className="absolute inset-0 animate-spin scale-[3] bg-[conic-gradient(at_center,transparent,var(--color-violet-600)_20%,transparent_30%)] animation-duration-[4s]" ></div>
+              
+              <div className="relative items-center justify-center p-4 border-neutral-200 border bg-neutral-100 rounded-lg">
+                <div className="flex items-center gap-1 mb-2">
+                  <Gift className="size-5 text-violet-600" />
+                  <div className="text-sm font-medium">
+                    <span className="bg-linear-to-b from-violet-700 to-violet-400 py-0.5 rounded-sm px-2 text-white">Premium</span> Plan
+                  </div>
+                </div>
+                <div className="text-xs text-neutral-600">Enjoy all premium features and exclusive access.</div>
+              </div>
+            </div>
+          )}
         </div>
       </aside>
 
-      {/* Mobile menu button */}
-      <button
-        onClick={() => setIsOpen(true)}
-        className="fixed left-4 top-4 z-30 lg:hidden rounded-lg bg-white p-2 shadow-md border border-zinc-200"
-      >
-        <svg
-          className="h-6 w-6 text-zinc-900"
-          fill="none"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          strokeWidth="2"
-          viewBox="0 0 24 24"
-          stroke="currentColor"
+      {/* Mobile menu button - Only show when sidebar is closed */}
+      {!isOpen && (
+        <button
+          onClick={() => setIsOpen(true)}
+          className="fixed left-4 top-4 z-50 lg:hidden rounded-lg bg-white p-2 shadow-md border border-zinc-200"
         >
-          <path d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
+          <svg
+            className="h-6 w-6 text-zinc-900"
+            fill="none"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth="2"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+      )}
     </>
   );
 }

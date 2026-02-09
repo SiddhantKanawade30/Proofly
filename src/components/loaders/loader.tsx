@@ -2,9 +2,7 @@ import React from 'react';
 
 const SpacesSkeletonLoader = () => {
   return (
-    <div className="p-8 bg-neutral-100 min-h-screen">
-      
-
+    <div className="p-8 bg-neutral-100">
       {/* Cards Grid */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[1, 2, 3].map((item) => (

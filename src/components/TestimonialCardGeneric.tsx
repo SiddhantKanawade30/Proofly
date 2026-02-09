@@ -99,11 +99,39 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
     </div>
   );
 
-  // Special rendering for Twitter testimonials - just the embed
+  // Special rendering for Twitter testimonials - embed with action buttons
   if (testimonial.testimonialType === "TWITTER") {
     return (
-      <div className="mb-6">
-        {testimonial.content && <TwitterEmbed url={testimonial.content} />}
+      <div className="rounded-lg bg-white border border-zinc-200 p-6 hover:shadow-md transition-shadow">
+        <div className="flex flex-col h-full">
+          <div className="flex-1">
+            {testimonial.content && <TwitterEmbed url={testimonial.content} />}
+          </div>
+          
+          {/* Action buttons at bottom right for Twitter testimonials */}
+          <div className="flex justify-end mt-4 shrink-0">
+            <div className="flex items-center gap-2">
+              <button
+                onClick={() => onToggleFavorite(testimonial.id)}
+                className="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
+                title={isFavorite ? "Remove from favorites" : "Add to favorites"}
+              >
+                <Heart
+                  className={`size-4 transition-colors ${
+                    isFavorite ? "fill-red-500 text-red-500" : "text-zinc-400 hover:text-red-500"
+                  }`}
+                />
+              </button>
+              <button
+                onClick={() => (isArchived && onUnarchive ? onUnarchive(testimonial.id) : onArchive(testimonial.id))}
+                className="p-2 hover:bg-zinc-100 rounded-lg transition-colors"
+                title={isArchived ? "Unarchive" : "Archive"}
+              >
+                <Archive className="size-4 text-zinc-400 hover:text-zinc-600" />
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
     );
   }

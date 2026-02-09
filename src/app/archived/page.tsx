@@ -9,12 +9,11 @@ import { Toaster } from "sonner";
 import SpacesSkeletonLoader from "@/components/loaders/loader";
 import { useUser } from "@/context/UserContext";
 import { useFetchTestimonials, useTestimonialActions } from "@/hooks/useTestimonials";
-import { GenericTestimonialCard, MemoGenericTestimonialCard, TestimonialData } from "@/components/TestimonialCardGeneric";
+import { MemoGenericTestimonialCard, TestimonialData } from "@/components/TestimonialCardGeneric";
 
-type ViewMode = "list" | "cards";
 
 export default function ArchivedPage() {
-  const [viewMode, setViewMode] = useState<ViewMode>("cards");
+  const [viewMode, setViewMode] = useState<"cards">("cards");
   const router = useRouter();
   const { data, loading: authLoading } = useUser();
 
@@ -74,7 +73,7 @@ export default function ArchivedPage() {
     }
   }, [testimonials, unarchiveTestimonial]);
 
-  if (authLoading || loading) {
+  if (authLoading) {
     return (
       <div className="flex min-h-screen bg-zinc-50 font-sans">
         <Sidebar />
@@ -96,44 +95,20 @@ export default function ArchivedPage() {
               <Archive className="size-6 text-text-primary" />
               <h1 className="text-2xl font-bold text-text-primary">Archived</h1>
             </div>
-            {/* View Mode Toggle */}
-            <div className="flex items-center gap-1 p-1 bg-zinc-100 rounded-lg">
-              <button
-                onClick={() => setViewMode("list")}
-                className={`p-2 rounded transition-colors ${
-                  viewMode === "list"
-                    ? "bg-white shadow-sm text-text-primary"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
-                title="List View"
-              >
-                <List className="size-4" />
-              </button>
-              <button
-                onClick={() => setViewMode("cards")}
-                className={`p-2 rounded transition-colors ${
-                  viewMode === "cards"
-                    ? "bg-white shadow-sm text-text-primary"
-                    : "text-text-secondary hover:text-text-primary"
-                }`}
-                title="Cards View"
-              >
-                <Grid className="size-4" />
-              </button>
-            </div>
           </div>
           <p className="text-text-secondary">{testimonials.length} archived testimonials</p>
         </div>
 
-        {testimonials.length > 0 ? (
+        {loading ? (
+          <SpacesSkeletonLoader />
+        ) : testimonials.length > 0 ? (
           <div>
-            {viewMode === "list" ? (
-              <div className="space-y-4">
-                {testimonials.map((testimonial) => (
+            <div className="columns-1 gap-6 md:columns-2 lg:columns-3 w-full">
+              {testimonials.map((testimonial) => (
+                <div key={testimonial.id} className="break-inside-avoid mb-6">
                   <MemoGenericTestimonialCard
-                    key={testimonial.id}
                     testimonial={testimonial as TestimonialData & { space?: string }}
-                    viewMode="list"
+                    viewMode="cards"
                     isFavorite={favorites.has(testimonial.id)}
                     onToggleFavorite={handleToggleFavorite}
                     onArchive={handleUnarchive}
@@ -141,26 +116,9 @@ export default function ArchivedPage() {
                     showSpace={true}
                     isArchived={true}
                   />
-                ))}
-              </div>
-            ) : (
-              <div className="columns-1 gap-6 md:columns-2 lg:columns-3 w-full">
-                {testimonials.map((testimonial) => (
-                  <div key={testimonial.id} className="break-inside-avoid mb-6">
-                    <MemoGenericTestimonialCard
-                      testimonial={testimonial as TestimonialData & { space?: string }}
-                      viewMode="cards"
-                      isFavorite={favorites.has(testimonial.id)}
-                      onToggleFavorite={handleToggleFavorite}
-                      onArchive={handleUnarchive}
-                      onUnarchive={handleUnarchive}
-                      showSpace={true}
-                      isArchived={true}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
+                </div>
+              ))}
+            </div>
           </div>
         ) : (
           <div className="rounded-lg bg-white p-12 shadow-sm border border-zinc-200 text-center">

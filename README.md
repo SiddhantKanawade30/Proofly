@@ -19,6 +19,12 @@ Collect testimonials without friction. A powerful platform to gather, manage, an
 
 A clean, intuitive dashboard to manage all your testimonials, view analytics, and organize campaigns.
 
+## Wall of Love
+
+![Wall of Love](./public/wall-of-love.png)
+
+Create beautiful testimonial walls that showcase your customer success stories and build social proof.
+
 ## Backend
 
 The backend API for TestimonialsLo is available at: https://github.com/SiddhantKanawade30/Testimonial-backend
@@ -29,9 +35,3 @@ This repository contains the Node.js/Express backend with:
 - X (Twitter) API integration
 - Prisma ORM for database operations
 - Authentication and authorization middleware
-
-## Wall of Love
-
-![Wall of Love](./public/wall-of-love.png)
-
-Create beautiful testimonial walls that showcase your customer success stories and build social proof.

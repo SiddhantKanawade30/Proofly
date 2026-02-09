@@ -1,4 +1,26 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TestimonialsLo
+
+Collect testimonials without friction. A powerful platform to gather, manage, and showcase customer testimonials effortlessly.
+
+## Features
+
+- **Easy Collection**: Simple forms for customers to submit text and video testimonials
+- **Beautiful Display**: Embed testimonials on your website with customizable layouts
+- **Wall of Love**: Create stunning testimonial walls to build trust
+- **Organization**: Manage testimonials by campaigns and spaces
+- **Mobile Responsive**: Works perfectly on all devices
+
+## Dashboard
+
+![Dashboard](/dashboard.png)
+
+A clean, intuitive dashboard to manage all your testimonials, view analytics, and organize campaigns.
+
+## Wall of Love
+
+![Wall of Love](/wall-of-love.png)
+
+Create beautiful testimonial walls that showcase your customer success stories and build social proof.
 
 ## Getting Started
 

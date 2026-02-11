@@ -51,9 +51,7 @@ export function SignupForm({
 
       if(res.status === 201) {
         toast.success("Account created successfully! Redirecting to sign in...");
-        setTimeout(() => {
-          router.push("/signin");
-        }, 1500);
+        router.push("/signin");
       } else {
         toast.error("Failed to create account");
       }

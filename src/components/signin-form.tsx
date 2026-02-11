@@ -44,7 +44,7 @@ export function SigninForm({
       if(res.status === 200) {
         toast.success("Login successful! Redirecting...");
         localStorage.setItem("token", res.data.token);
-        router.push("/");
+        router.push("/overview");
         
       }
       else {

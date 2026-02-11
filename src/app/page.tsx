@@ -16,7 +16,6 @@ export default function Home() {
       <Navbar />
       <main className="flex flex-col">
         <HeroSection />
-        <SocialProofSection />
         <HowItWorksSection />
         <DashboardPreviewSection />
         <FeaturesSection />

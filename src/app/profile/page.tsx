@@ -26,10 +26,7 @@ export default function ProfilePage() {
       // Remove token from localStorage
       localStorage.removeItem("token");
       toast.success("Logged out successfully");
-      // Redirect to signin page
-      setTimeout(() => {
-        router.push("/signin");
-      }, 1000);
+      router.push("/signin");
     } catch (error) {
       console.error("Logout error:", error);
       toast.error("Failed to logout");

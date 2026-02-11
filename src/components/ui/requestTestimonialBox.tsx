@@ -50,9 +50,7 @@ export function RequestTestimonialBox({ campaigns = [] }: RequestTestimonialBoxP
     
     navigator.clipboard.writeText(fullShareUrl).then(() => {
       toast.success("Share link copied to clipboard")
-      setTimeout(() => {
-        setOpen(false)
-      }, 1500)
+      setOpen(false)
     }).catch((err) => {
       console.error("Failed to copy:", err)
       toast.error("Failed to copy link")

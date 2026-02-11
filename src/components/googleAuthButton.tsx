@@ -40,9 +40,7 @@ export function GoogleAuthButton({ handleGoogleLogin }: GoogleAuthButtonProps) {
         localStorage.setItem("token", res.data.token);
         toast.success("Login successful! Redirecting...");
         console.log("User:", res.data.user);
-        setTimeout(() => {
-          window.location.href = "/overview";
-        }, 100);
+        window.location.href = "/overview";
       } else {
         toast.error("Login failed: No token received");
       }

@@ -6,16 +6,9 @@ export default function Navbar() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
         <Link href={"/"}>
           <div className="flex items-center gap-2">
-            <div className="flex size-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: "20px" }}
-              >
-                chat_bubble
-              </span>
-            </div>
-            <span className="text-lg font-bold tracking-tight text-slate-900">
-              TestimonialFlow
+           
+            <span className="text-lg hover:text-primary-hover font-bold tracking-tight text-slate-900">
+              TestimonialsLo
             </span>
           </div>
         </Link>

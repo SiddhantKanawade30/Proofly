@@ -66,8 +66,8 @@ export default function Sidebar({ user }: SidebarProps) {
         <div className="flex h-full flex-col">
           {/* Logo/Brand */}
           <div className="flex items-center justify-between pt-5">
-            <h1 className="flex items-center gap-1 text-xl font-bold text-text-primary" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
-              <MessageCircle className="size-5" /> Testimonials
+            <h1 className="flex items-center gap-1 text-xl font-bold text-primary" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
+              &nbsp;TestimonialsLo
             </h1>
             
             {/* Close button for mobile */}

@@ -1,3 +1,5 @@
+import { Rocket, Briefcase, Cloud } from "lucide-react";
+
 export default function UseCasesSection() {
   return (
     <section className="py-20 bg-slate-50 border-t border-slate-100">
@@ -10,54 +12,36 @@ export default function UseCasesSection() {
         <div className="flex flex-col md:flex-row justify-center gap-8">
           {/* <!-- Card 1 --> */}
           <div className="flex-1 bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-primary">
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: "32px" }}
-              >
-                rocket_launch
-              </span>
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+              <Rocket className="h-7 w-7" />
             </div>
             <h3 className="text-lg font-bold text-slate-900">Startups</h3>
-            <p className="mt-2 text-slate-600">
-              Build credibility from day one. Show early adopters that
-              others love your product.
+            <p className="mt-2 text-slate-600 text-left">
+              Build credibility from day one with social proof that converts early adopters.
             </p>
           </div>
           {/* <!-- Card 2 --> */}
           <div className="flex-1 bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-purple-50 text-purple-600">
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: "32px" }}
-              >
-                work
-              </span>
+              <Briefcase className="h-7 w-7" />
             </div>
             <h3 className="text-lg font-bold text-slate-900">
               Freelancers
             </h3>
-            <p className="mt-2 text-slate-600">
-              Showcase your best work and client praise to win higher-value
-              contracts.
+            <p className="mt-2 text-slate-600 text-left">
+              Showcase client testimonials to win higher-value contracts and build reputation.
             </p>
           </div>
           {/* <!-- Card 3 --> */}
           <div className="flex-1 bg-white p-8 rounded-xl shadow-sm border border-slate-200 text-center">
             <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-teal-50 text-teal-600">
-              <span
-                className="material-symbols-outlined"
-                style={{ fontSize: "32px" }}
-              >
-                cloud
-              </span>
+              <Cloud className="h-7 w-7" />
             </div>
             <h3 className="text-lg font-bold text-slate-900">
               SaaS Products
             </h3>
-            <p className="mt-2 text-slate-600">
-              Reduce churn and increase landing page conversions with video
-              proof.
+            <p className="mt-2 text-slate-600 text-left">
+              Reduce churn and boost conversions with video testimonials and social proof.
             </p>
           </div>
         </div>

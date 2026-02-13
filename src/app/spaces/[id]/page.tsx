@@ -158,7 +158,7 @@ export default function SpaceDetailPage() {
   };
 
   return (
-    <div className="flex min-h-screen bg-zinc-50 font-sans">
+    <div className="flex min-h-screen bg-background-offset font-sans">
       <Toaster position="bottom-right" />
       <Sidebar />
       <Topbar>

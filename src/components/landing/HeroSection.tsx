@@ -4,7 +4,7 @@ export default function HeroSection() {
   return (
     <section className="relative overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-32">
       {/* Background Image */}
-      <div><br /><br /><br /><br /></div>
+      <div><br /><br /><br /><br /><br /></div>
       
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
@@ -24,7 +24,7 @@ export default function HeroSection() {
             <span className="text-primary">Without any Friction</span>
           </h2>
           <p className="text-xl leading-relaxed text-slate-600 mb-12 max-w-3xl mx-auto">
-            Collect authentic customer testimonials effortlessly. The all-in-one platform for video and text social proof that builds trust instantly.
+          The all-in-one platform for video and text social proof that builds trust instantly.
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link href="/signup">
@@ -32,15 +32,10 @@ export default function HeroSection() {
               Create your testimonial page
             </button>
             </Link>
-            <button className="inline-flex h-12 items-center justify-center rounded-lg border border-slate-200 bg-white px-8 text-base font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900">
-              <span
-                className="material-symbols-outlined mr-2 text-slate-500"
-                style={{ fontSize: "20px" }}
-              >
-                play_circle
-              </span>
-              View demo
-            </button>
+              <button className="inline-flex h-12 items-center justify-center rounded-lg border border-slate-200 bg-white px-8 text-base font-semibold text-slate-700 shadow-sm transition-colors hover:bg-slate-50 hover:text-slate-900">
+                
+                Sign in    
+              </button>
           </div>
         </div>
       </div>

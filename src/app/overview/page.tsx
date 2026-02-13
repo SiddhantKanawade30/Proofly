@@ -37,7 +37,7 @@ export default function Home() {
   }
 
   return (
-    <div className="flex min-h-screen bg-gray-100 font-sans">
+    <div className="flex min-h-screen bg-background-offset font-sans">
       <Sidebar user={data?.user} />
       <Topbar campaigns={data?.user?.campaigns || []}>
         {/* Stats Cards */}

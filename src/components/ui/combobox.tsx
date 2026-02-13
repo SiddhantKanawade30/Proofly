@@ -58,12 +58,6 @@ export function ComboboxDemo({ userName = "User", userEmail = "user@example.com"
       icon: <User className="size-4" />,
       href: "/profile",
     },
-    // {
-    //   value: "settings",
-    //   label: "Settings",
-    //   icon: <Settings className="size-4" />,
-    //   href: "/settings",
-    // },
     {
       value: "plans",
       label: "Plans",

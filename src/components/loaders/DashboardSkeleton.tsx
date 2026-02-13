@@ -2,7 +2,7 @@ import React from 'react';
 
 const DashboardSkeleton = () => {
   return (
-    <div className="min-h-screen bg-gray-100 font-sans">
+    <div className="min-h-screen bg-background-offset font-sans">
       {/* Stats Cards */}
       <div className="grid gap-6 md:grid-cols-3 mb-8">
         {[1, 2, 3].map((item) => (

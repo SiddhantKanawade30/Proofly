@@ -12,26 +12,7 @@ export default function Navbar() {
             </span>
           </div>
         </Link>
-        <nav className="hidden md:flex items-center gap-8">
-          <a
-            className="text-sm font-medium text-slate-600 hover:text-primary transition-colors"
-            href="#features"
-          >
-            Features
-          </a>
-          <a
-            className="text-sm font-medium text-slate-600 hover:text-primary transition-colors"
-            href="#how-it-works"
-          >
-            How it works
-          </a>
-          <a
-            className="text-sm font-medium text-slate-600 hover:text-primary transition-colors"
-            href="#pricing"
-          >
-            Pricing
-          </a>
-        </nav>
+       
         <div className="flex items-center gap-4">
           <Link
             className="hidden text-sm font-medium text-slate-600 hover:text-slate-900 sm:block"

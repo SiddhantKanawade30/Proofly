@@ -73,12 +73,9 @@ export function SignupForm({
               href="#"
               className="flex flex-col items-center gap-2 font-medium"
             >
-              <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEnd className="size-6" />
-              </div>
-              <span className="sr-only">Testimonials</span>
+              <span className="sr-only">TestimonialsLo</span>
             </a>
-            <h1 className="text-xl font-bold">Welcome to Testimonials</h1>
+            <h1 className="text-xl font-bold">Welcome to TestimonialsLo</h1>
             <FieldDescription>
               Already have an account? <a href="/signin">Sign in</a>
             </FieldDescription>

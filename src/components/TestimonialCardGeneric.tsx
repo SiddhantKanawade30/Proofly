@@ -17,7 +17,7 @@ export interface TestimonialData {
   createdAt: string;
   favourite: boolean;
   campaignId: string;
-  space?: string; // For pages that show space name
+  space?: string;
 }
 
 interface GenericTestimonialCardProps {
@@ -62,23 +62,19 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
 
   const TextContent = () => (
     <div className="flex-1">
-      {/* Testimonial content with quotes in bold dark font */}
       <div className="mb-4 md:mb-6">
         <p className="text-base md:text-lg font-bold text-text-primary leading-relaxed mb-4">
           "{testimonial.content}"
         </p>
         
-        {/* Rating */}
-        {testimonial.rating && testimonial.rating > 0 && (
+          {testimonial.rating && testimonial.rating > 0 && (
           <div className="mb-4">
             <StarDisplay value={testimonial.rating} />
           </div>
         )}
         
-        {/* Add a line after rating */}
         <div className="border-t border-zinc-200 mb-4"></div>
         
-        {/* Author info */}
         <div className="space-y-1">
           <h3 className="font-semibold text-text-primary truncate">
             {testimonial.name}
@@ -99,7 +95,7 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
     </div>
   );
 
-  // Special rendering for Twitter testimonials - embed with action buttons
+  
   if (testimonial.testimonialType === "TWITTER") {
     return (
       <div className="rounded-lg bg-white border border-zinc-200 p-6 hover:shadow-md transition-shadow">
@@ -108,7 +104,6 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
             {testimonial.content && <TwitterEmbed url={testimonial.content} />}
           </div>
           
-          {/* Action buttons at bottom right for Twitter testimonials */}
           <div className="flex justify-end mt-4 shrink-0">
             <div className="flex items-center gap-2">
               <button
@@ -141,7 +136,7 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
       <div className={`rounded-lg bg-white border border-zinc-200 p-6 hover:shadow-md transition-shadow ${isArchived ? "" : ""}`}>
         <div className="flex items-start justify-between gap-4">
           <div className="flex-1 min-w-0">
-            {/* Header */}
+            
             <div className="flex items-center gap-3 mb-3 flex-wrap">
               <div className="flex items-center gap-2 min-w-0">
                 <h3 className="font-medium text-text-primary truncate">{testimonial.name}</h3>
@@ -162,20 +157,20 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
               )}
             </div>
 
-            {/* Content */}
+
             {testimonial.testimonialType === "VIDEO" && testimonial.playbackId ? (
               <VideoContent />
             ) : (
               <TextContent />
             )}
 
-            {/* Footer */}
+
             <p className="text-xs text-text-secondary">
               {formatDate(testimonial.createdAt)}
             </p>
           </div>
 
-          {/* Actions */}
+
           <div className="flex items-center gap-2 ml-4 shrink-0">
             <button
               onClick={() => onToggleFavorite(testimonial.id)}
@@ -201,10 +196,10 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
     );
   }
 
-  // Cards view
+  
   return (
     <div className="rounded-lg bg-white border border-zinc-200 p-6 hover:shadow-md transition-shadow flex flex-col h-full break-inside-avoid">
-      {/* Top Row: Badges */}
+
       <div className="flex items-start justify-between mb-4 flex-wrap gap-2 shrink-0">
         <div className="flex items-center gap-2 flex-wrap min-w-0">
           {showSpace && testimonial.space && (
@@ -221,19 +216,19 @@ export const GenericTestimonialCard: React.FC<GenericTestimonialCardProps> = ({
         </div>
       </div>
 
-      {/* Content based on testimonial type */}
+      
       {testimonial.testimonialType === "VIDEO" && testimonial.playbackId ? (
         <>
           <VideoContent />
           
-          {/* Rating for video testimonials */}
+          
           {testimonial.rating && testimonial.rating > 0 && (
             <div className="mb-4">
               <StarDisplay value={testimonial.rating} />
             </div>
           )}
           
-          {/* Author info for video testimonials */}
+
           <div className="space-y-1 mb-4">
             <h3 className="font-semibold text-text-primary truncate">
               {testimonial.name}

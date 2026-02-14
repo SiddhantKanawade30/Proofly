@@ -9,7 +9,6 @@ interface StarRatingProps {
 }
 
 export function StarRating({value, onChange, required = false }: StarRatingProps) {
-  // Simple click handler
   const handleClick = (rating: number) => {
     onChange(rating);
   };

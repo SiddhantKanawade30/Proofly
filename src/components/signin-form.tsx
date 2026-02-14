@@ -71,10 +71,8 @@ export function SigninForm({
               href="#"
               className="flex flex-col items-center gap-2 font-medium"
             >
-              <div className="flex size-8 items-center justify-center rounded-md">
-                <GalleryVerticalEnd className="size-6" />
-              </div>
-              <span className="sr-only">Testimonials</span>
+             
+              <span className="sr-only">TestimonialsLo</span>
             </a>
             <h1 className="text-xl font-bold">Welcome back</h1>
             <FieldDescription>

@@ -40,7 +40,6 @@ export default function Home() {
     <div className="flex min-h-screen bg-background-offset font-sans">
       <Sidebar user={data?.user} />
       <Topbar campaigns={data?.user?.campaigns || []}>
-        {/* Stats Cards */}
         <div className="grid gap-6 md:grid-cols-3 mb-12 mt-4">
           <div className="rounded-md bg-white px-6 space-y-2 py-3 border border-gray-300">
             <h3 className="text-base flex items-center gap-1 mb-2 font-medium text-text-secondary">
@@ -89,7 +88,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Chart - Full Width Below */}
         <div className="h-100 overflow-hidden">
           <DottedLineChart testimonials={data?.sortTestimonial || []} />
         </div>

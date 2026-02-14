@@ -20,7 +20,6 @@ export const VideoSubmitButton = ({
   const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
 
-  // Function to poll for asset creation
   const pollForAsset = async (uploadId: string, maxAttempts = 30): Promise<string> => {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
     
@@ -34,11 +33,9 @@ export const VideoSubmitButton = ({
           return data.playbackId;
         }
 
-        // Wait 2 seconds before next attempt
         await new Promise(resolve => setTimeout(resolve, 2000));
       } catch (error: any) {
         if (error.response?.status === 202) {
-          // Still processing, continue polling
           await new Promise(resolve => setTimeout(resolve, 2000));
         } else {
           throw error;
@@ -59,7 +56,6 @@ export const VideoSubmitButton = ({
       setUploading(true);
       const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
 
-      // Step 1: Get upload URL from backend
       const { data } = await axios.post(
         `${BACKEND_URL}/testimonials/create-video-upload`,{
           campaignId: campaign.id
@@ -69,7 +65,6 @@ export const VideoSubmitButton = ({
       const uploadUrl = data.url;
       const uploadId = data.id;
 
-      // Step 2: Upload video to Mux
       await axios.put(uploadUrl, blob, {
         headers: {
           "Content-Type": "video/webm",
@@ -79,10 +74,8 @@ export const VideoSubmitButton = ({
       setUploading(false);
       setProcessing(true);
 
-      // Step 3: Poll for asset creation and get playback ID
       const playbackId = await pollForAsset(uploadId);
 
-      // Step 4: Create testimonial with correct playback ID
       await axios.post(`${BACKEND_URL}/testimonials/create`, {
         name: formData.name,
         email: formData.email,

@@ -57,23 +57,19 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
     
     if (!campaign) return;
 
-    // Validate rating
     if (!formData.rating || formData.rating === 0) {
       toast.error("Please select a rating (1-5 stars) before submitting.");
       return;
     }
 
-    // Clear previous errors
     setErrorMessage(null);
     setSubmitting(true);
     
     try {
-      // Ensure rating is a number
       const rating = Number(formData.rating);
       
       console.log("Submitting testimonial with rating:", rating);
       
-      // Use different endpoints based on testimonial type
       const endpoint = testimonialType === 'TEXT' 
         ? `${BACKEND_URL}/testimonials/create`
         : `${BACKEND_URL}/testimonials/create-video-upload`;
@@ -97,13 +93,11 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
       const status = error?.response?.status;
       const serverMessage = error?.response?.data?.message || error?.response?.data?.error || "";
 
-      // If backend returns 403 for quota limits, show a friendly quota message
       if (status === 403 && /only allows|Free plan|Fair usage|exceeded/i.test(serverMessage)) {
         setErrorMessage(
           "Quota reached: Sorry, this campaign has reached its testimonial limit on the current plan. Your testimonial was not submitted."
         );
       } else {
-        // Use rate limit handler for other errors
         rateLimitHandlers.public.handleError(error, "Failed to submit testimonial");
       }
     } finally {
@@ -140,13 +134,9 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
   return (
     <div className="min-h-screen bg-neutral-100 flex items-center justify-center p-4 py-8">
       <div className="max-w-4xl w-full flex flex-col gap-4">
-        {/* Header Section */}
         <HeaderSection campaign={campaign} />
-
-        {/* Testimonial Form Card */}
         <div className="bg-white text-card-foreground flex flex-col gap-6 rounded-xl border py-6 shadow-[0px_2px_3px_-1px_rgba(0,0,0,0.1),0px_1px_0px_0px_rgba(25,28,33,0.02),0px_0px_0px_1px_rgba(25,28,33,0.08)]">
           
-          {/* Toggle Button */}
           <ToggleButton testimonialType={testimonialType} setTestimonialType={setTestimonialType} />
 
           <div className="px-6">
@@ -188,8 +178,7 @@ export default function PublicTestimonialPage({ params }: { params: Promise<{ sl
           </div>
         </div>
 
-        {/* Footer */}
-            <Footer />
+        <Footer />
       </div>
     </div>
   );

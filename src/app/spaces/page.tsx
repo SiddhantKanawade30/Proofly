@@ -187,14 +187,12 @@ export default function SpacesPage() {
           </>
         )}
 
-        {/* Create Space Dialog */}
         <CreateSpaceDialog 
           open={isDialogOpen} 
           onOpenChange={setIsDialogOpen}
           onSpaceCreated={handleSpaceCreated}
         /> 
 
-        {/* Delete Confirmation Dialog */}
         <DeleteSpaceDialog
           open={deleteDialogOpen}
           onOpenChange={(open) => {

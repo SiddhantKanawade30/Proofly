@@ -68,7 +68,7 @@ export default function SpaceDetailPage() {
         const testi = res.data?.testimonials || [];
         setTestimonials(testi);
         
-        // Update the map of testimonial IDs to authors
+        
         const map = new Map<string, string>();
         testi.forEach((t: any) => {
           map.set(t.id, t.author || t.name || "Unknown");
@@ -94,7 +94,7 @@ export default function SpaceDetailPage() {
   const handleToggleFavorite = useCallback(async (testimonialId: string) => {
     const token = localStorage.getItem("token");
     
-    // Check current state to determine action
+
     setFavorites(prev => {
       const isFavorite = prev.has(testimonialId);
       const endpoint = isFavorite ? "/testimonials/remove-favorite" : "/testimonials/favourite";
@@ -103,7 +103,7 @@ export default function SpaceDetailPage() {
         headers: { Authorization: `Bearer ${token}` }
       }).catch(error => {
         rateLimitHandlers.protected.handleError(error, "Failed to update favorite");
-        // Revert optimistic update on error
+        
         setFavorites(prev2 => {
           const newFavorites = new Set(prev2);
           if (isFavorite) {
@@ -215,7 +215,6 @@ export default function SpaceDetailPage() {
           </>
         )}
 
-        {/* Archive Confirmation Dialog */}
         <AlertDialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
           <AlertDialogContent>
             <AlertDialogTitle>Archive testimonial?</AlertDialogTitle>
@@ -231,7 +230,6 @@ export default function SpaceDetailPage() {
           </AlertDialogContent>
         </AlertDialog>
 
-        {/* Embed Modal */}
         
         <EmbedModal
           open={embedModalOpen}
@@ -239,7 +237,6 @@ export default function SpaceDetailPage() {
           campaignId={id}
         />
 
-        {/* Import Modal */}
         <ImportModal
           open={importModalOpen}
           onOpenChange={setImportModalOpen}

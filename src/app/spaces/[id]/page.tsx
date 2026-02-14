@@ -91,6 +91,44 @@ export default function SpaceDetailPage() {
     fetchSpace();
   }, [id, backendUrl]);
 
+  // Create a refetch function that can be called by child components
+  const refetchSpace = useCallback(() => {
+    const fetchSpace = async () => {
+      const token = localStorage.getItem("token");
+
+      if (!token || !backendUrl) {
+        return;
+      }
+
+      try {
+        const res = await axios.get(`${backendUrl}/testimonials/get/${id}`, {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+
+        setSpaceData(res.data);
+        const testi = res.data?.testimonials || [];
+        setTestimonials(testi);
+        
+        const map = new Map<string, string>();
+        testi.forEach((t: any) => {
+          map.set(t.id, t.author || t.name || "Unknown");
+        });
+        testimonialMapRef.current = map;
+        
+        const favIds = new Set<string>(
+          testi
+            .filter((t: any) => t.favourite === true)
+            .map((t: any) => t.id)
+        );
+        setFavorites(favIds);
+      } catch (error: any) {
+        rateLimitHandlers.protected.handleError(error, "Failed to refresh space details");
+      }
+    };
+
+    fetchSpace();
+  }, [id, backendUrl]);
+
   const handleToggleFavorite = useCallback(async (testimonialId: string) => {
     const token = localStorage.getItem("token");
     
@@ -241,6 +279,7 @@ export default function SpaceDetailPage() {
           open={importModalOpen}
           onOpenChange={setImportModalOpen}
           campaignId={id}
+          onImportSuccess={refetchSpace}
         />
         
       

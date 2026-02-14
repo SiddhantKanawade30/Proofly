@@ -4,7 +4,17 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import axios from "axios";
 
-const ImportModal = ({ open, onOpenChange, campaignId } : { open: boolean; onOpenChange: (open: boolean) => void; campaignId: string }) => {
+const ImportModal = ({ 
+  open, 
+  onOpenChange, 
+  campaignId, 
+  onImportSuccess 
+}: { 
+  open: boolean; 
+  onOpenChange: (open: boolean) => void; 
+  campaignId: string;
+  onImportSuccess?: () => void;
+}) => {
   const [url, setUrl] = useState("");
 
   const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -34,6 +44,11 @@ const ImportModal = ({ open, onOpenChange, campaignId } : { open: boolean; onOpe
 
     setUrl("");
     onOpenChange(false);
+
+    // Call success callback to refresh testimonials
+    if (onImportSuccess) {
+      onImportSuccess();
+    }
 
   } catch (error) {
     console.error(error);

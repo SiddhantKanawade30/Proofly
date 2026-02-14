@@ -1,6 +1,4 @@
 "use client";
-
-import React from "react";
 import { Archive, Heart } from "lucide-react";
 import { StarRating } from "./starRating";
 

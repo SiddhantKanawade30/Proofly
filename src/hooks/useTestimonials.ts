@@ -47,10 +47,6 @@ interface FetchedData {
   refetch: () => Promise<void>;
 }
 
-/**
- * Custom hook for fetching testimonials with modern patterns
- * Handles API calls, state management, and error handling
- */
 export function useFetchTestimonials({
   endpoint,
   showSpace = false,
@@ -89,14 +85,13 @@ export function useFetchTestimonials({
       const favIds = new Set<string>();
 
       if (Array.isArray(response.data)) {
-        // If response is a campaign array (getFavourite, getArchived)
         const campaigns: Campaign[] = response.data;
         
         campaigns.forEach((campaign) => {
           campaign.testimonials.forEach((testimonial) => {
             const item: TestimonialFetchData & { space?: string } = {
               ...testimonial,
-              campaignId: campaign.id, // Ensure campaignId is set
+              campaignId: campaign.id,
             };
             
             if (showSpace) {
@@ -111,7 +106,6 @@ export function useFetchTestimonials({
           });
         });
       } else if (response.data?.testimonials) {
-        // If response has testimonials array directly (getTestimonialsByCampaign)
         flattenedTestimonials = response.data.testimonials;
         flattenedTestimonials.forEach((testimonial) => {
           if (testimonial.favourite) {
@@ -119,14 +113,12 @@ export function useFetchTestimonials({
           }
         });
       } else if (response.data?.data) {
-        // If response has data array (getAllUserTestimonials)
         flattenedTestimonials = response.data.data;
         flattenedTestimonials.forEach((testimonial) => {
           if (testimonial.favourite) {
             favIds.add(testimonial.id);
           }
           
-          // If campaign object exists but space not set, add space from campaign
           if (showSpace && !testimonial.space && testimonial.campaign?.title) {
             testimonial.space = testimonial.campaign.title;
           }
@@ -158,9 +150,7 @@ export function useFetchTestimonials({
   };
 }
 
-/**
- * Hook for managing testimonial actions (favorite, archive, unarchive)
- */
+
 export function useTestimonialActions() {
   const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
   const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;

@@ -28,7 +28,6 @@ export const VideoSpace = ({
 
   return (
     <div>
-      {/* Large Video Recording Area */}
       <div className="space-y-1.5 shrink-0">
         <label className="flex items-center gap-1.5 text-sm font-medium">
           <Video className="h-4 w-4 text-muted-foreground" />
@@ -40,7 +39,6 @@ export const VideoSpace = ({
       </div>
 
       <div className="py-5">
-        {/* Name */}
         <div className="space-y-1.5 shrink-0 py-3">
           <label
             htmlFor="name"
@@ -64,7 +62,6 @@ export const VideoSpace = ({
           </div>
         </div>
 
-        {/* Email */}
         <div className="space-y-1.5 shrink-0 py-3">
           <label
             htmlFor="email"
@@ -88,7 +85,6 @@ export const VideoSpace = ({
           </div>
         </div>
 
-        {/* Position */}
         <div className="space-y-1.5 shrink-0 py-3">
           <label
             htmlFor="position"
@@ -117,7 +113,6 @@ export const VideoSpace = ({
           </div>
         </div>
 
-        {/* Star Rating */}
         <StarRating
           value={formData.rating}
           onChange={(rating) => setFormData({ ...formData, rating })}
@@ -125,7 +120,6 @@ export const VideoSpace = ({
         />
       </div>
 
-      {/* Submit Button */}
       <VideoSubmitButton
         campaign={campaign}
         testimonialType={testimonialType}

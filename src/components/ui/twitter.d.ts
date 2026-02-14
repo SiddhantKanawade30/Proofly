@@ -1,4 +1,4 @@
-// types/twitter.d.ts
+
 declare global {
   interface Window {
     twttr?: {

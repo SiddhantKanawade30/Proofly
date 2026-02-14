@@ -23,23 +23,23 @@ export default function ArchivedPage() {
     }
   }, [authLoading, data?.user, router]);
 
-  // Fetch archived testimonials
+  
   const { testimonials: hookTestimonials, favorites: hookFavorites, loading, refetch } = useFetchTestimonials({
     endpoint: "/testimonials/archived",
     showSpace: true,
   });
 
-  // Local state for UI updates without page refresh
+  
   const [testimonials, setTestimonials] = useState<typeof hookTestimonials>([]);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-  // Sync with hook data when it changes
+  
   useEffect(() => {
     setTestimonials(hookTestimonials);
     setFavorites(hookFavorites);
   }, [hookTestimonials, hookFavorites]);
 
-  // Get action handlers
+  
   const { toggleFavorite, unarchiveTestimonial } = useTestimonialActions();
 
   const handleToggleFavorite = useCallback(async (testimonialId: string) => {
@@ -48,10 +48,10 @@ export default function ArchivedPage() {
       const testimonial = testimonials.find(t => t.id === testimonialId);
       if (!testimonial) return prev;
       
-      // Call API
+      
       toggleFavorite(testimonialId, isFavorite, testimonial.campaignId);
       
-      // Update UI optimistically
+      
       const newFavorites = new Set(prev);
       if (isFavorite) {
         newFavorites.delete(testimonialId);
@@ -68,7 +68,7 @@ export default function ArchivedPage() {
 
     const success = await unarchiveTestimonial(testimonialId, testimonial.campaignId);
     if (success) {
-      // Remove unarchived testimonial from local state
+      
       setTestimonials(prev => prev.filter(t => t.id !== testimonialId));
     }
   }, [testimonials, unarchiveTestimonial]);

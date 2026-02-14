@@ -27,7 +27,6 @@ export default function SpaceEmbedPage() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Load Twitter widget script
     const script = document.createElement('script');
     script.src = 'https://platform.twitter.com/widgets.js';
     script.async = true;
@@ -46,7 +45,6 @@ export default function SpaceEmbedPage() {
       .then((res) => {
         setData(res.data || []);
         
-        // Fetch tweet embeds for Twitter testimonials
         const twitterTestimonials = res.data.filter((t: Testimonial) => 
           t.testimonialType === "TWITTER" && t.content
         );
@@ -73,7 +71,6 @@ export default function SpaceEmbedPage() {
           setTweetEmbeds(embedMap);
           setLoading(false);
           
-          // Re-render Twitter widgets after embeds are loaded
           setTimeout(() => {
             if (window.twttr && window.twttr.widgets) {
               window.twttr.widgets.load();
@@ -89,7 +86,6 @@ export default function SpaceEmbedPage() {
   return (
     <div className="min-h-screen bg-gray-50 overflow-y-auto">
       <div className="w-full relative">
-        {/* Background Image Header */}
         <div className="relative h-38 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 flex items-center justify-center">
           <div className="flex items-center justify-center">
             <h1 className="text-3xl md:text-4xl font-bold text-white mb-4 text-center px-4">What People Say</h1>
@@ -102,7 +98,6 @@ export default function SpaceEmbedPage() {
             key={t.id}
             className="bg-white rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow duration-200 break-inside-avoid mb-4"
           >
-            {/* Rating - Only for TEXT and VIDEO */}
             {t.testimonialType !== "TWITTER" && (
               <div className="flex items-center gap-2 mb-4">
                 <div className="text-yellow-400 text-sm">
@@ -111,7 +106,6 @@ export default function SpaceEmbedPage() {
               </div>
             )}
 
-            {/* Content based on type */}
             <div className="mb-4">
               {t.testimonialType === "VIDEO" && t.playbackId ? (
                 <div className="aspect-video rounded-lg overflow-hidden bg-gray-100">
@@ -153,7 +147,6 @@ export default function SpaceEmbedPage() {
               ) : null}
             </div>
 
-            {/* Author info - Only for TEXT and VIDEO */}
             {t.testimonialType !== "TWITTER" && (
               <div className="border-t pt-4 flex items-center justify-between">
                 <div>

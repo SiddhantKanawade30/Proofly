@@ -23,7 +23,6 @@ export default function ProfilePage() {
   const handleLogout = async () => {
     try {
       setIsLoggingOut(true);
-      // Remove token from localStorage
       localStorage.removeItem("token");
       toast.success("Logged out successfully");
       router.push("/signin");
@@ -32,11 +31,6 @@ export default function ProfilePage() {
       toast.error("Failed to logout");
       setIsLoggingOut(false);
     }
-  };
-
-  const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
-    // Add toast or notification logic here if needed
   };
 
   const formatDate = (dateString: string) => {
@@ -78,19 +72,16 @@ export default function ProfilePage() {
       <Sidebar user={user} />
       <Topbar>
         <div className="max-w-2xl mx-auto">
-          {/* Header */}
           <div className="mb-8">
             <h1 className="text-3xl font-bold text-zinc-900">Profile Settings</h1>
             <p className="text-zinc-500 mt-2">Manage your account information and preferences</p>
           </div>
 
-          {/* Profile Card */}
           <div className="bg-white rounded-lg shadow-sm border border-zinc-200 p-8 mb-6">
-            {/* Avatar and Name */}
             <div className="flex items-center gap-6 mb-8 pb-8 border-b border-zinc-200">
               {user.profileImage ? (
-                <img 
-                  src={user.profileImage} 
+                <img
+                  src={user.profileImage}
                   alt={user.name}
                   className="h-20 w-20 rounded-full object-cover"
                 />
@@ -105,9 +96,7 @@ export default function ProfilePage() {
               </div>
             </div>
 
-            {/* User Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-              {/* Email */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
                   <Mail className="size-4" />
@@ -117,29 +106,26 @@ export default function ProfilePage() {
                   <p className="text-zinc-600 bg-zinc-50 px-4 py-2 rounded border border-zinc-200 flex-1">
                     {user.email}
                   </p>
-                  
+
                 </div>
               </div>
 
 
-              {/* Plan */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
                   <Zap className="size-4" />
                   Current Plan
                 </label>
                 <div className="flex items-center gap-2">
-                  <span className={`px-4 py-2 rounded border font-medium ${
-                    user.plan === "PREMIUM"
+                  <span className={`px-4 py-2 rounded border font-medium ${user.plan === "PREMIUM"
                       ? "bg-violet-50 border-violet-200 text-violet-700"
                       : "bg-zinc-50 border-zinc-200 text-zinc-700"
-                  }`}>
+                    }`}>
                     {user.plan}
                   </span>
                 </div>
               </div>
 
-              {/* Video Count */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
                   <Zap className="size-4" />
@@ -150,7 +136,6 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              {/* Member Since */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
                   <Calendar className="size-4" />
@@ -161,7 +146,6 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              {/* Plan Expires */}
               <div className="space-y-2">
                 <label className="flex items-center gap-2 text-sm font-medium text-zinc-700">
                   <Calendar className="size-4" />
@@ -172,12 +156,8 @@ export default function ProfilePage() {
                 </p>
               </div>
             </div>
-
-            {/* Copy Confirmation */}
-            {/* Removed copy feedback as it's not needed */}
           </div>
 
-          {/* Upgrade CTA */}
           {user.plan === "FREE" && (
             <div className="bg-gradient-to-r from-violet-50 to-purple-50 rounded-lg border border-violet-200 p-6 mb-6">
               <h3 className="text-lg font-semibold text-violet-900 mb-2">Upgrade to Premium</h3>
@@ -190,7 +170,6 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/* Logout Button */}
           <div className="flex justify-end">
             <button
               onClick={handleLogout}

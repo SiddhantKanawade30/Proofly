@@ -3,13 +3,13 @@ import Link from "next/link";
 export default function HeroSection() {
   return (
     <section className="relative overflow-hidden pt-16 pb-20 lg:pt-24 lg:pb-32">
-      {/* Background Image */}
+      {/* Bg Image */}
       <div><br /><br /><br /><br /><br /></div>
       
       <div 
         className="absolute inset-0 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url(/doddle.png)",
+          backgroundImage: "url(/doddle.webp)",
           backgroundSize: "cover",
           backgroundPosition: "center top",
         }}

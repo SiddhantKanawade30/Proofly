@@ -56,7 +56,6 @@ export const TextTestimonial = ({
   return (
     <>
       <div className="grid grid-cols-2 gap-3 shrink-0">
-        {/* Name */}
         <div className="space-y-1.5">
           <label
             htmlFor="name"
@@ -80,7 +79,6 @@ export const TextTestimonial = ({
           </div>
         </div>
 
-        {/* Email */}
         <div className="space-y-1.5">
           <label
             htmlFor="email"
@@ -105,7 +103,6 @@ export const TextTestimonial = ({
         </div>
       </div>
 
-      {/* Position */}
       <div className="space-y-1.5 shrink-0 pt-3">
         <label
           htmlFor="position"
@@ -135,7 +132,6 @@ export const TextTestimonial = ({
         </div>
       </div>
 
-      {/* Your Feedback / Experience */}
       <div className="flex flex-col pt-3 space-y-1.5">
         <label
           htmlFor="content"
@@ -158,14 +154,12 @@ export const TextTestimonial = ({
         </div>
       </div>
 
-      {/* Star Rating */}
       <StarRating
         value={formData.rating}
         onChange={(rating) => setFormData({ ...formData, rating })}
         required
       />
 
-      {/* Submit Button */}
       <TextSubmitButton submitting={submitting} onSubmit={onSubmit} />
     </>
   );

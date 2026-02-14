@@ -31,19 +31,19 @@ export default function Sidebar({ user }: SidebarProps) {
   const pathname = usePathname();
   const { data } = useUser();
 
-  // Use data from context if user prop not provided
+  
   const userData = user || data?.user;
 
   const isActive = (href: string) => {
-    // Exact match for overview and settings
+    
     if ((href === "/overview" || href === "/settings") && pathname === href) {
       return true;
     }
-    // For spaces, check if pathname starts with /spaces (includes /spaces/[id])
+
     if (href === "/spaces" && pathname.startsWith("/spaces")) {
       return true;
     }
-    // For other routes, exact match
+    
     return pathname === href;
   };
 
@@ -64,13 +64,13 @@ export default function Sidebar({ user }: SidebarProps) {
         } lg:translate-x-0 w-62`}
       >
         <div className="flex h-full flex-col">
-          {/* Logo/Brand */}
+
           <div className="flex items-center justify-between pt-5">
             <h1 className="flex items-center gap-1 text-xl font-bold text-primary" style={{ fontFamily: "'Space Grotesk', sans-serif" }}>
               &nbsp;TestimonialsLo
             </h1>
             
-            {/* Close button for mobile */}
+            {/* Hamburg icon*/}
             <button
               onClick={() => setIsOpen(false)}
               className="lg:hidden p-1 rounded-md hover:bg-zinc-100 transition-colors"
@@ -93,7 +93,7 @@ export default function Sidebar({ user }: SidebarProps) {
             <ComboboxDemo userName={userData?.name} userEmail={userData?.email} profileImage={userData?.profileImage} />
           </div>
 
-          {/* Navigation */}
+          
           <nav className="flex-1 overflow-y-auto py-3">
             <ul className="space-y-1">
               {navItems.map((item) => {
@@ -102,7 +102,7 @@ export default function Sidebar({ user }: SidebarProps) {
                   <li key={item.name}>
                     <Link
                       href={item.href}
-                      onClick={() => setIsOpen(false)} // Close sidebar on mobile when clicking nav item
+                      onClick={() => setIsOpen(false)} 
                       className={`flex items-center gap-2 rounded-lg px-4 py-3 text-sm font-medium transition-colors ${
                         active
                           ? "bg-zinc-100 text-text-primary"
@@ -118,7 +118,6 @@ export default function Sidebar({ user }: SidebarProps) {
             </ul>
           </nav>
 
-          {/* Footer */}
           {userData?.plan === "FREE" ? (
             <div className="border items-center justify-center mb-2 p-4 bg-neutral-100 rounded-lg">
               <div className="flex items-center gap-1 mb-2">
@@ -146,7 +145,6 @@ export default function Sidebar({ user }: SidebarProps) {
         </div>
       </aside>
 
-      {/* Mobile menu button - Only show when sidebar is closed */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}

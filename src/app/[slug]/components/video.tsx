@@ -1,6 +1,5 @@
 "use client";
 import { useState, useRef, useEffect } from "react";
-import axios from "axios"
 
 export const VideoLogic = ({ blob, setBlob }: { blob: Blob | null; setBlob: React.Dispatch<React.SetStateAction<Blob | null>> }) => {
   const [recording, setRecording] = useState(false);
@@ -94,9 +93,8 @@ export const VideoLogic = ({ blob, setBlob }: { blob: Blob | null; setBlob: Reac
           className="absolute inset-0 w-full h-full object-cover"
         />
 
-        {/* Controls Overlay */}
         {!blob ? (
-          // Start / Stop Recording Buttons
+
           <div className="absolute bottom-6 left-1/2 -translate-x-1/2">
             {!recording ? (
               <button
@@ -115,18 +113,16 @@ export const VideoLogic = ({ blob, setBlob }: { blob: Blob | null; setBlob: Reac
             )}
           </div>
         ) : (
-          // RECORD AGAIN BUTTON INSIDE VIDEO
           <div className="absolute bottom-8 left-1/2 -translate-x-1/2">
             <button
               onClick={recordAgain}
               className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg transition-all font-semibold"
             >
-              ↺ Record Again
+              Record Again
             </button>
           </div>
         )}
 
-        {/* Recording Indicator */}
         {recording && (
           <div className="absolute top-4 right-4 flex items-center gap-2 bg-red-600 px-3 py-1.5 rounded-full text-white shadow-md">
             <div className="w-3 h-3 bg-white rounded-full animate-pulse" />

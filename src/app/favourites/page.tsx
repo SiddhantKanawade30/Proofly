@@ -21,23 +21,23 @@ export default function FavouritesPage() {
     }
   }, [authLoading, data?.user, router]);
 
-  // Fetch favorite testimonials
+  
   const { testimonials: hookTestimonials, favorites: hookFavorites, loading, refetch } = useFetchTestimonials({
     endpoint: "/testimonials/favourite",
     showSpace: true,
   });
 
-  // Local state for UI updates without page refresh
+  
   const [testimonials, setTestimonials] = useState<typeof hookTestimonials>([]);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-  // Sync with hook data when it changes
+  
   useEffect(() => {
     setTestimonials(hookTestimonials);
     setFavorites(hookFavorites);
   }, [hookTestimonials, hookFavorites]);
 
-  // Get action handlers
+  
   const { toggleFavorite, archiveTestimonial } = useTestimonialActions();
 
   const handleToggleFavorite = useCallback(async (testimonialId: string) => {
@@ -46,10 +46,10 @@ export default function FavouritesPage() {
       const testimonial = testimonials.find(t => t.id === testimonialId);
       if (!testimonial) return prev;
       
-      // Call API
+      
       toggleFavorite(testimonialId, isFavorite, testimonial.campaignId);
       
-      // Update UI optimistically
+      
       const newFavorites = new Set(prev);
       if (isFavorite) {
         newFavorites.delete(testimonialId);
@@ -66,7 +66,7 @@ export default function FavouritesPage() {
 
     const success = await archiveTestimonial(testimonialId, testimonial.campaignId);
     if (success) {
-      // Remove archived testimonial from local state
+      
       setTestimonials(prev => prev.filter(t => t.id !== testimonialId));
     }
   }, [testimonials, archiveTestimonial]);

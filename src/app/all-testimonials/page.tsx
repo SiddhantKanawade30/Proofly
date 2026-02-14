@@ -36,21 +36,21 @@ export default function AllTestimonialsPage() {
   const [archiveDialogOpen, setArchiveDialogOpen] = useState(false);
   const [testimonialToArchive, setTestimonialToArchive] = useState<{ id: string; author: string; campaignId: string } | null>(null);
 
-  // Fetch all testimonials
+  
   const { testimonials: hookTestimonials, favorites: hookFavorites, loading, refetch } = useFetchTestimonials({
     endpoint: "/testimonials/get/all",
     showSpace: true,
   });
 
-  // Local state for UI updates without page refresh
+  
   const [testimonials, setTestimonials] = useState<typeof hookTestimonials>([]);
   const [favorites, setFavorites] = useState<Set<string>>(new Set());
 
-  // Sync with hook data when it changes
+  
   useEffect(() => {
     setTestimonials(hookTestimonials);
     setFavorites(hookFavorites);
-    // Update map of testimonial IDs to authors
+    
     const map = new Map<string, { author: string; campaignId: string }>();
     hookTestimonials.forEach(t => {
       map.set(t.id, { author: t.name, campaignId: t.campaignId });
@@ -60,7 +60,7 @@ export default function AllTestimonialsPage() {
 
   const testimonialMapRef = useRef<Map<string, { author: string; campaignId: string }>>(new Map());
 
-  // Get action handlers
+  
   const { toggleFavorite, archiveTestimonial } = useTestimonialActions();
 
   const handleToggleFavorite = useCallback(async (testimonialId: string) => {
@@ -69,10 +69,8 @@ export default function AllTestimonialsPage() {
       const testimonial = testimonials.find(t => t.id === testimonialId);
       if (!testimonial) return prev;
       
-      // Call API
       toggleFavorite(testimonialId, isFavorite, testimonial.campaignId);
       
-      // Update UI optimistically
       const newFavorites = new Set(prev);
       if (isFavorite) {
         newFavorites.delete(testimonialId);
@@ -104,7 +102,6 @@ export default function AllTestimonialsPage() {
     );
     
     if (success) {
-      // Remove archived testimonial from local state
       setTestimonials(prev => prev.filter(t => t.id !== testimonialToArchive.id));
       setArchiveDialogOpen(false);
       setTestimonialToArchive(null);
@@ -121,13 +118,6 @@ export default function AllTestimonialsPage() {
             <div className="flex items-center gap-2">
               <MessageCircle className="size-6 text-text-primary" />
               <h1 className="text-2xl font-bold text-text-primary">All Testimonials</h1>
-            </div>
-            <div className="flex items-center gap-3">
-              {/* Embed Button */}
-              <button className="flex items-center gap-2 px-4 py-2 bg-text-primary text-white rounded-lg hover:bg-zinc-800 transition-colors">
-                <Code className="size-4" />
-                Embed
-              </button>
             </div>
           </div>
           <p className="text-text-secondary">{testimonials.length} testimonials</p>
@@ -162,7 +152,6 @@ export default function AllTestimonialsPage() {
           </div>
         )}
 
-        {/* Archive Confirmation Dialog */}
         <Dialog open={archiveDialogOpen} onOpenChange={setArchiveDialogOpen}>
           <DialogContent>
             <DialogHeader>

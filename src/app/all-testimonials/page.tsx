@@ -119,12 +119,6 @@ export default function AllTestimonialsPage() {
               <MessageCircle className="size-6 text-text-primary" />
               <h1 className="text-2xl font-bold text-text-primary">All Testimonials</h1>
             </div>
-            <div className="flex items-center gap-3">
-              <button className="flex items-center gap-2 px-4 py-2 bg-text-primary text-white rounded-lg hover:bg-zinc-800 transition-colors">
-                <Code className="size-4" />
-                Embed
-              </button>
-            </div>
           </div>
           <p className="text-text-secondary">{testimonials.length} testimonials</p>
         </div>

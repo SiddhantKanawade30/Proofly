@@ -20,8 +20,7 @@ interface EmbedModalProps {
 export function EmbedModal({ open, onOpenChange, campaignId }: EmbedModalProps) {
   const [copiedUrl, setCopiedUrl] = useState(false);
   const [copiedCode, setCopiedCode] = useState(false);
-  const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL;
-  const embedUrl = `${backendUrl}/testimonials/embed/${campaignId}`;
+  const embedUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/spaces/${campaignId}/embed`;
   const iframeCode = `<iframe src="${embedUrl}" width="100%" height="600" frameborder="0" title="Testimonials"></iframe>`;
 
   const handleCopyUrl = async () => {

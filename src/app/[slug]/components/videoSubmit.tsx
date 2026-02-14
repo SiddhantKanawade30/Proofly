@@ -19,6 +19,7 @@ export const VideoSubmitButton = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const pollForAsset = async (uploadId: string, maxAttempts = 30): Promise<string> => {
     const BACKEND_URL = process.env.NEXT_PUBLIC_BACKEND_URL;
@@ -87,6 +88,7 @@ export const VideoSubmitButton = ({
       });
 
       onSubmit(uploadId, playbackId);
+      setShowSuccess(true);
       
     } catch (error) {
       console.error("Video upload error:", error);
@@ -100,31 +102,53 @@ export const VideoSubmitButton = ({
   const isDisabled = submitting || uploading || processing || !blob;
 
   return (
-    <div className="flex-shrink-0 pt-1">
-      <button
-        type="button"
-        disabled={isDisabled}
-        onClick={handleSubmit}
-        className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90"
-      >
-        {uploading || processing || submitting ? (
-          <>
-            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
-            <span>
-              {uploading ? "Uploading..." : processing ? "Processing..." : "Submitting..."}
-            </span>
-          </>
-        ) : (
-          <>
-            <Video className="h-4 w-4" />
-            <span>Submit Video</span>
-          </>
-        )}
-      </button>
-      <p className="mt-3 text-center text-xs text-muted-foreground">
-        By submitting, you agree that your feedback may be used for testimonials
-        and marketing purposes.
-      </p>
-    </div>
+    <>
+      {showSuccess && (
+        <div className="fixed inset-0 bg-white/50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-sm mx-4 text-center">
+            <div className="text-green-600 mb-4">
+              <svg className="w-12 h-12 mx-auto" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7"></path>
+              </svg>
+            </div>
+            <h3 className="text-lg font-semibold text-gray-900 mb-2">Thank You!</h3>
+            <p className="text-gray-600 mb-4">Your video testimonial has been submitted successfully and is being processed.</p>
+            <button
+              onClick={() => setShowSuccess(false)}
+              className="w-full bg-primary text-primary-foreground rounded-md py-2 px-4 hover:bg-primary/90 transition-colors"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
+      
+      <div className="flex-shrink-0 pt-1">
+        <button
+          type="button"
+          disabled={isDisabled}
+          onClick={handleSubmit}
+          className="w-full inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md text-sm font-medium transition-all disabled:pointer-events-none disabled:opacity-50 h-10 px-4 py-2 bg-primary text-primary-foreground hover:bg-primary/90"
+        >
+          {uploading || processing || submitting ? (
+            <>
+              <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+              <span>
+                {uploading ? "Uploading..." : processing ? "Processing..." : "Submitting..."}
+              </span>
+            </>
+          ) : (
+            <>
+              <Video className="h-4 w-4" />
+              <span>Submit Video</span>
+            </>
+          )}
+        </button>
+        <p className="mt-3 text-center text-xs text-muted-foreground">
+          By submitting, you agree that your feedback may be used for testimonials
+          and marketing purposes.
+        </p>
+      </div>
+    </>
   );
 };
